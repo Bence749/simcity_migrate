@@ -12,12 +12,49 @@ namespace SimCity.ViewModel
     {
         #region Field
 
-        private GameModel _model;
+        private readonly GameModel _model;
+        private Int32 _timeElapsed = 0;
+        private Int32 _moneySum = 0;
+        private Int32 _populationSum = 0;
         public string? cityName; //add button and shit
+        
+        
         #endregion
 
         #region Properties
-        public Int32 TimeElapsed { get; set; }
+
+        public Int32 TimeElapsed
+        {
+            get => _timeElapsed;
+            set
+            {
+                if (_timeElapsed == value) return;
+                _timeElapsed = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Int32 PopulationSum
+        {
+            get => _populationSum;
+            set
+            {
+                if (_populationSum == value) return;
+                _populationSum = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Int32 MoneySum
+        {
+            get => _moneySum;
+            set
+            {
+                if (_moneySum == value) return;
+                _moneySum = value;
+                OnPropertyChanged();
+            }
+        }
 
         public string? SpeedOfGame
         {
@@ -95,8 +132,8 @@ namespace SimCity.ViewModel
         private void Model_AdvanceTime(object? sender, SimCityArgs e)
         {
             TimeElapsed = e.TimeElapsed;
-            
-            OnPropertyChanged(nameof(TimeElapsed));
+            PopulationSum = e.Citizens;
+            MoneySum = e.Money;
         }
         #endregion
 
