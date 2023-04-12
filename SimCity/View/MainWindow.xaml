@@ -75,9 +75,10 @@
                 <Separator />
                 <MenuItem Header="Kilépés" Command="{Binding ExitCommand}" />
             </MenuItem>
-            <MenuItem Header="Szünet" Command="{Binding PauseCommand}"/>
-            <MenuItem Header="Gyorsít" Command="{Binding SpeedUpCommand}"/>
-            <MenuItem Header="Lassít" Command="{Binding SpeedDownCommand}"/>
+            <MenuItem Header="Szünet" Command="{Binding SpeedCommand}" CommandParameter="0"/>
+            <MenuItem Header="Normál" Command="{Binding SpeedCommand}" CommandParameter="1"/>
+            <MenuItem Header="Gyors" Command="{Binding SpeedCommand}" CommandParameter="2"/>
+            <MenuItem Header="Gyorsabb" Command="{Binding SpeedCommand}" CommandParameter="3"/>
             <MenuItem Header="Építés">
                 <MenuItem Header="Zóna">
                     <MenuItem Header="Lakó" Command="{Binding BuildLivingCommand}"/>

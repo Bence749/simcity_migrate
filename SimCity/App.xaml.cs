@@ -36,6 +36,9 @@ namespace SimCity
 
         private void App_Startup(object? sender, StartupEventArgs e)
         {
+            // modell létrehozása
+            _model = new GameModel();
+            
             // nézemodell létrehozása
             _viewModel = new GameViewModel(_model);
 
