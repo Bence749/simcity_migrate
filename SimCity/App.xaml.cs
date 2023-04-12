@@ -36,6 +36,9 @@ namespace SimCity
 
         private void App_Startup(object? sender, StartupEventArgs e)
         {
+            // modell létrehozása
+            _model = new GameModel();
+            
             // nézemodell létrehozása
             _viewModel = new GameViewModel(_model);
 
@@ -47,7 +50,7 @@ namespace SimCity
 
             // időzítő létrehozása
             _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromSeconds(1);
+            _timer.Interval = TimeSpan.FromMilliseconds(250);
             _timer.Tick += new EventHandler(Timer_Tick);
             _timer.Start();
         }
@@ -71,7 +74,7 @@ namespace SimCity
 
         private void Timer_Tick(object? sender, EventArgs e)
         {
-            //_model.AdvanceTime();
+            _model.AdvanceTime();
         }
 
     }

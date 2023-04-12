@@ -13,10 +13,24 @@ namespace SimCity.ViewModel
         #region Field
 
         private GameModel _model;
-        public string cityName; //add button and shit
+        public string? cityName; //add button and shit
         #endregion
 
         #region Properties
+        public Int32 TimeElapsed { get; set; }
+
+        public string? SpeedOfGame
+        {
+            get => _model.GamePace.ToString();
+            set
+            {
+                if ((int)_model.GamePace == Convert.ToInt32(value)) return;
+                _model.GamePace = (PlaySpeed)Convert.ToInt32(value);
+                OnPropertyChanged();
+            }
+        }
+        
+        public DelegateCommand SpeedCommand { get; private set; }
         public DelegateCommand NewGameSmallCommand { get; private set; }
 
         public ObservableCollection<SimCityField> Fields { get; set; }
@@ -35,7 +49,10 @@ namespace SimCity.ViewModel
             //játék csatlakoztatása
             _model = model;
 
+            _model.GameAdvanced += new EventHandler<SimCityArgs>(Model_AdvanceTime);
+            
             //parancsok kezelése
+            SpeedCommand = new DelegateCommand(param => OnSpeedChange(param));
             NewGameSmallCommand = new DelegateCommand(param => OnNewGameSmall());
 
 
@@ -74,16 +91,25 @@ namespace SimCity.ViewModel
                 }
             }
         }
-            #endregion
+
+        private void Model_AdvanceTime(object? sender, SimCityArgs e)
+        {
+            TimeElapsed = e.TimeElapsed;
+            
+            OnPropertyChanged(nameof(TimeElapsed));
+        }
+        #endregion
 
         #region Event Methods
 
-            private void OnNewGameSmall()
-            {
-                NewGameSmall?.Invoke(this, EventArgs.Empty);
-            }
+        private void OnSpeedChange(object param) => SpeedOfGame = Convert.ToString(param);
+        
+        private void OnNewGameSmall()
+        {
+            NewGameSmall?.Invoke(this, EventArgs.Empty);
+        }
 
-            #endregion
+        #endregion
 
         }
     }
