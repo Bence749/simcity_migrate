@@ -17,13 +17,14 @@ namespace SimCity.Model
 {
     public class GameModel
     {
+
         private Int32 _timeElapsed;
         private Int32 _tickCount;
 
         public PlaySpeed GamePace { get; set; }
 
         public event EventHandler<SimCityArgs>? GameAdvanced;
-        
+
         public GameModel()
         {
             _timeElapsed = 0;
@@ -34,8 +35,8 @@ namespace SimCity.Model
         {
             ++_tickCount;
             if (GamePace != PlaySpeed.Stop &&  (GamePace == PlaySpeed.Faster || 
-                                                 (GamePace == PlaySpeed.Fast && _tickCount % 2 == 0) ||
-                                                 (GamePace == PlaySpeed.Normal && _tickCount % 4 == 0)))
+                                                (GamePace == PlaySpeed.Fast && _tickCount % 2 == 0) ||
+                                                (GamePace == PlaySpeed.Normal && _tickCount % 4 == 0)))
             {
                 ++_timeElapsed;
             }
