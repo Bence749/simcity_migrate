@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using SimCity.Persistence;
 
 /// <summary>
@@ -18,13 +19,15 @@ namespace SimCity.Model
 {
     public class GameModel
     {
-        private Map _fields = null!;
+        private Map _table = null!;
         private Int32 _timeElapsed;
         private Int32 _tickCount;
         private Int32 _money;
         private Int32 _citizens;
 
         public PlaySpeed GamePace { get; set; }
+
+        public Map Table { get { return _table; } }
 
         public event EventHandler<SimCityArgs>? GameAdvanced;
 
@@ -38,7 +41,7 @@ namespace SimCity.Model
 
         public void CreateGame(Int32 rows, Int32 columns)
         {
-            _fields = new Map(rows, columns);
+            _table = new Map(rows, columns);
         }
 
         public void AdvanceTime()
@@ -61,9 +64,9 @@ namespace SimCity.Model
             Int32 cost = 0;
             switch (mode)
             {
-                case "Build": cost = _fields.Build(row, column, toBuild);
+                case "Build": cost = _table.Build(row, column, toBuild);
                     break;
-                case "Remove": _fields.Remove(row, column);
+                case "Remove": _table.Remove(row, column);
                     break;
             }
 

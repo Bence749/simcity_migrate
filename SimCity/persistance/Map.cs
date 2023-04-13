@@ -2,7 +2,7 @@ using System;
 
 namespace SimCity.Persistence;
 
-public enum AreaType { None, Road, Living, Commercial, Industrial}
+public enum AreaType { None, Road, Living, Commercial, Industrial, Police, Stadium, Tree}
 
 /// <summary>
 /// Class <c>Map</c> storing the necessary map data 
@@ -12,18 +12,25 @@ public class Map
     #region Variable vars
 
     private Int32 roadCost = 100;
+    private Int32 _rowSize;
+    private Int32 _columnSize;
 
     #endregion
-    
+
     private AreaType[,] _fields;
 
     public AreaType this[Int32 x, Int32 y] => _fields[x, y];
-    
+    public Int32 RowSize { get { return _rowSize; } private set { _rowSize = value; } }
+    public Int32 ColumnSize { get { return _columnSize; } private set { _columnSize = value; } }
+
     /// <summary>
     /// Constructor <c>Map</c> creating the desired map size and setting up the basic values
     /// </summary>
     public Map(Int32 rows, Int32 columns)
     {
+        _rowSize = rows;
+        _columnSize = columns;
+
         _fields = new AreaType[rows, columns];
 
         for (var i = 0; i < rows * columns; ++i)
