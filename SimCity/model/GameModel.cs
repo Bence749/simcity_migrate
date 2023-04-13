@@ -18,7 +18,7 @@ namespace SimCity.Model
 {
     public class GameModel
     {
-        private Map Fields;
+        private Map? Fields;
         private Int32 _timeElapsed;
         private Int32 _tickCount;
         private Int32 _money;
@@ -28,12 +28,16 @@ namespace SimCity.Model
 
         public event EventHandler<SimCityArgs>? GameAdvanced;
 
-        public GameModel(Int32 rows, Int32 columns)
+        public GameModel()
         {
             _timeElapsed = 0;
             _money = 100000;
             _citizens = 0;
             GamePace = PlaySpeed.Normal;
+        }
+
+        public void CreateGame(Int32 rows, Int32 columns)
+        {
             Fields = new Map(rows, columns);
         }
 
