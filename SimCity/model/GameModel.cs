@@ -18,7 +18,7 @@ namespace SimCity.Model
 {
     public class GameModel
     {
-        private Map? Fields;
+        private Map _fields = null!;
         private Int32 _timeElapsed;
         private Int32 _tickCount;
         private Int32 _money;
@@ -38,7 +38,7 @@ namespace SimCity.Model
 
         public void CreateGame(Int32 rows, Int32 columns)
         {
-            Fields = new Map(rows, columns);
+            _fields = new Map(rows, columns);
         }
 
         public void AdvanceTime()
@@ -54,6 +54,17 @@ namespace SimCity.Model
             }
 
             this.GameAdvanced?.Invoke(this, new SimCityArgs(_timeElapsed, _citizens, _money));
+        }
+        
+        public void ClickHandle(Int32 row, Int32 column, String mode, AreaType toBuild = AreaType.None)
+        {
+            switch (mode)
+            {
+                case "Build": _fields.Build(row, column, toBuild);
+                    break;
+                case "Remove": _fields.Remove(row, column);
+                    break;
+            }
         }
     }
 }

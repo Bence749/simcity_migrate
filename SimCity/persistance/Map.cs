@@ -11,7 +11,7 @@ public class Map
 {
     private AreaType[,] _fields;
 
-    private AreaType this[Int32 x, Int32 y] => _fields[x, y];
+    public AreaType this[Int32 x, Int32 y] => _fields[x, y];
     
     /// <summary>
     /// Constructor <c>Map</c> creating the desired map size and setting up the basic values
@@ -22,5 +22,15 @@ public class Map
 
         for (var i = 0; i < rows * columns; ++i)
             _fields[i / rows, i % columns] = AreaType.None;
+    }
+
+    public void Build(Int32 row, Int32 column, AreaType toBuild)
+    {
+        
+    }
+
+    public void Remove(Int32 row, Int32 column)
+    {
+        
     }
 }
