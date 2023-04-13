@@ -1,7 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
+using System.Windows.Markup;
+using System.Windows.Media;
 using Microsoft.Win32;
 using SimCity.View;
 using SimCity.ViewModel;
@@ -36,8 +40,10 @@ namespace SimCity
 
         private void App_Startup(object? sender, StartupEventArgs e)
         {
-            // modell létrehozása
-            _model = new GameModel();
+            // modell létrehozás
+            UniformGrid? gridContent = (UniformGrid)((ItemsPanelTemplate?)MainWindow.FindName("GameField"))
+                .LoadContent(); //Get the size of the defined grid and create the model accordingly
+            _model = new GameModel(gridContent.Rows, gridContent.Columns);
             
             // nézemodell létrehozása
             _viewModel = new GameViewModel(_model);
