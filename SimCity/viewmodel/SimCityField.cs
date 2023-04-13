@@ -9,7 +9,7 @@ namespace SimCity.ViewModel
 {
     public class SimCityField : ViewModelBase
     {
-        private AreaType _zoneType;
+        private String _zoneType;
         private string _text = String.Empty;
 
         /// <summary>
@@ -17,11 +17,7 @@ namespace SimCity.ViewModel
         /// </summary>
         public String ZoneType
         {
-            get { return _zoneType.GetAreaType(); }
-        }
-
-        public AreaType SetZoneType
-        {
+            get { return _zoneType; }
             set
             {
                 if (_zoneType != value)

@@ -134,7 +134,7 @@ namespace SimCity.ViewModel
         private void RefreshTable()
         {
             foreach (SimCityField field in Fields) // inicializálni kell a mezőket is
-                field.SetZoneType = _model.Field[field.X, field.Y];
+                field.ZoneType = _model.Field[field.X, field.Y].GetAreaType();
             
         }
 
@@ -152,7 +152,7 @@ namespace SimCity.ViewModel
                         Y = j,
                         Number = i * _model.Field.RowSize + j, // a gomb sorszáma, amelyet felhasználunk az azonosításhoz
                         Text = String.Empty,
-                        SetZoneType = new AreaType(),
+                        ZoneType= new AreaType().GetAreaType(),
                         ClickCommand = new DelegateCommand(param => ClickField(Convert.ToInt32(param))),
                     });
                 }
@@ -213,6 +213,7 @@ namespace SimCity.ViewModel
             MoneySum = e.Money;
             
             RefreshTable();
+            OnPropertyChanged(nameof(Fields));
         }
         private void OnBuild(String param)
         {
