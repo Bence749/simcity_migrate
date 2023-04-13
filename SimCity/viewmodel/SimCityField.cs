@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SimCity.Persistence;
 
 namespace SimCity.ViewModel
 {
     public class SimCityField : ViewModelBase
     {
-        private int _zoneType;
+        private String _zoneType;
         private string _text = String.Empty;
 
         /// <summary>
         /// 0 ha lakózóna, 1 ha ipari, 2 ha kereskedelmi
         /// </summary>
-        public int ZoneType
+        public String ZoneType
         {
             get { return _zoneType; }
             set
@@ -54,9 +55,9 @@ namespace SimCity.ViewModel
         public Int32 Number { get; set; }
 
         /// <summary>
-        /// Lépés parancs lekérdezése, vagy beállítása.
+        /// kattintás parancs lekérdezése, vagy beállítása.
         /// </summary>
-        //public DelegateCommand? StepCommand { get; set; }
+        public DelegateCommand? ClickCommand { get; set; }
     }
 }
 

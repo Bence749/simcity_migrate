@@ -54,13 +54,13 @@
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate x:Name="GameField">
                     <!--a gombokat egy rácsba fűzzük fel-->
-                    <UniformGrid Rows="50" Columns="50" />
+                    <UniformGrid Rows="{Binding Rows}" Columns="{Binding Columns}" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <!--az elemek gombok lesznek-->
                 <DataTemplate>
-                    <Button Command="{Binding StepCommand}" CommandParameter="{Binding Number}" Content="{Binding Text}" Focusable="False" RenderTransformOrigin="0.1, 0.1" FontSize="10" FontWeight="Bold">
+                    <Button Command="{Binding ClickCommand}" CommandParameter="{Binding Number}" Content="{Binding Text}" Focusable="False" RenderTransformOrigin="0.1, 0.1" FontSize="10" FontWeight="Bold">
                         <!-- gomb háttérszíne -->
                         <!-- gomb méretezése (csak az animációnál használjuk ki) -->
                         <Button.RenderTransform>
@@ -71,17 +71,20 @@
                             <Style TargetType="Button">
                                 <Style.Triggers>
                                     <!-- a szín egy adatkötés hatására fog változni -->
-                                    <DataTrigger Binding="{Binding ZoneType}" Value="0">
+                                    <DataTrigger Binding="{Binding ZoneType}" Value="None">
                                         <Setter Property="Background" Value="White" />
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding ZoneType}" Value="1">
+                                    <DataTrigger Binding="{Binding ZoneType}" Value="Living">
                                         <Setter Property="Background" Value="Green" />
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding ZoneType}" Value="2">
+                                    <DataTrigger Binding="{Binding ZoneType}" Value="Commercial">
                                         <Setter Property="Background" Value="Yellow" />
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding ZoneType}" Value="3">
+                                    <DataTrigger Binding="{Binding ZoneType}" Value="Industrial">
                                         <Setter Property="Background" Value="Red" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ZoneType}" Value="Road">
+                                        <Setter Property="Background" Value="Black" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -136,16 +139,16 @@
             <MenuItem Header="Gyorsabb" Command="{Binding SpeedCommand}" CommandParameter="3"/>
             <MenuItem Header="Építés">
                 <MenuItem Header="Zóna">
-                    <MenuItem Header="Lakó" Command="{Binding BuildLivingCommand}"/>
-                    <MenuItem Header="Ipari" Command="{Binding BuildIndustrialCommand}"/>
-                    <MenuItem Header="Kereskedelmi" Command="{Binding BuildCommercialCommand}"/>
+                    <MenuItem Header="Lakó" Command="{Binding BuildCommand}" CommandParameter="Living"/>
+                    <MenuItem Header="Ipari" Command="{Binding BuildCommand}" CommandParameter="Industrial"/>
+                    <MenuItem Header="Kereskedelmi" Command="{Binding BuildCommand}" CommandParameter="Commercial"/>
                 </MenuItem>
                 <MenuItem Header="Szolgáltató">
-                    <MenuItem Header="Rendőrség" Command="{Binding BuildPoliceCommand}"/>
-                    <MenuItem Header="Stadion" Command="{Binding BuildStadionCommand}"/>
-                    <MenuItem Header="Fa" Command="{Binding BuildTreeCommand}"/>
+                    <MenuItem Header="Rendőrség" Command="{Binding BuildCommand}" CommandParameter="Police"/>
+                    <MenuItem Header="Stadion" Command="{Binding BuildCommand}" CommandParameter="Stadium"/>
+                    <MenuItem Header="Fa" Command="{Binding BuildCommand}" CommandParameter="Tree"/>
                 </MenuItem>
-                <MenuItem Header="Út" Command="{Binding BuildRoadCommand}"/>
+                <MenuItem Header="Út" Command="{Binding BuildCommand}" CommandParameter="Road"/>
             </MenuItem>
             <MenuItem Header="Bontás" Command="{Binding DemolishCommand}"/>
         </Menu>
