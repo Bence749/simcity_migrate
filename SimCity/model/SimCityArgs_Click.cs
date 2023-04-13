@@ -7,7 +7,7 @@ namespace SimCity.Model
     {
         public readonly Int32 Money;
 
-        public SimCityArgsClick(Int32 timeElapsed, Int32 citizens, Int32 money)
+        public SimCityArgsClick(Int32 money)
         {
             this.Money = money;
         }
