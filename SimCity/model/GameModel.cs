@@ -26,7 +26,7 @@ namespace SimCity.Model
 
         public PlaySpeed GamePace { get; set; }
 
-        public event EventHandler<SimCityArgs>? GameAdvanced;
+        public event EventHandler<SimCityArgsTime>? GameAdvanced;
 
         public GameModel()
         {
@@ -53,7 +53,7 @@ namespace SimCity.Model
                 _money += _citizens * 10;
             }
 
-            this.GameAdvanced?.Invoke(this, new SimCityArgs(_timeElapsed, _citizens, _money));
+            this.GameAdvanced?.Invoke(this, new SimCityArgsTime(_timeElapsed, _citizens, _money));
         }
         
         public void ClickHandle(Int32 row, Int32 column, String mode, AreaType toBuild = AreaType.None)

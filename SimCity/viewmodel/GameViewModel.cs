@@ -86,7 +86,7 @@ namespace SimCity.ViewModel
             //játék csatlakoztatása
             _model = model;
 
-            _model.GameAdvanced += new EventHandler<SimCityArgs>(Model_AdvanceTime);
+            _model.GameAdvanced += new EventHandler<SimCityArgsTime>(Model_AdvanceTime);
             
             //parancsok kezelése
             SpeedCommand = new DelegateCommand(param => OnSpeedChange(param));
@@ -129,7 +129,7 @@ namespace SimCity.ViewModel
             }
         }
 
-        private void Model_AdvanceTime(object? sender, SimCityArgs e)
+        private void Model_AdvanceTime(object? sender, SimCityArgsTime e)
         {
             TimeElapsed = e.TimeElapsed;
             PopulationSum = e.Citizens;
