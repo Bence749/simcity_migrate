@@ -9,7 +9,6 @@ namespace SimCity.Model
 
         public SimCityArgsClick(Int32 money)
         {
-            this.Money = money;
         }
     }
 }

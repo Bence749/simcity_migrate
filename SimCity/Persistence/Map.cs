@@ -48,18 +48,11 @@ public class Map
     
     public Int32 Build(Int32 row, Int32 column, AreaType toBuild)
     {
-        switch (toBuild.GetAreaType())
+        if (_fields[row, column].GetAreaType() == "None")
         {
-            case "Road":
-                if (_fields[row, column].GetAreaType() == "None")
-                {
-                    _fields[row, column] = new Road();
-                    return toBuild.BuildCost;
-                }
-
-                break;
+            _fields[row, column] = toBuild;
+            return toBuild.BuildCost;
         }
-
         return 0;
     }
 

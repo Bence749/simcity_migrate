@@ -30,6 +30,7 @@ namespace SimCity.Model
         public Map Field { get { return _field; } }
 
         public event EventHandler<SimCityArgsTime>? GameAdvanced;
+        public event EventHandler<SimCityArgsClick>? GameBuild;
 
         public GameModel()
         {
@@ -71,6 +72,8 @@ namespace SimCity.Model
             }
 
             _money -= cost;
+            
+            GameBuild?.Invoke(this, new SimCityArgsClick(_money));
         }
     }
 }

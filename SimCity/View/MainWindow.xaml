@@ -74,7 +74,7 @@
                                     <DataTrigger Binding="{Binding ZoneType}" Value="None">
                                         <Setter Property="Background" Value="White" />
                                     </DataTrigger>
-                                    <DataTrigger Binding="{Binding ZoneType}" Value="Living">
+                                    <DataTrigger Binding="{Binding ZoneType}" Value="Residential">
                                         <Setter Property="Background" Value="Green" />
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding ZoneType}" Value="Commercial">

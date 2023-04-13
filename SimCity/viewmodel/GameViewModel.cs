@@ -112,6 +112,7 @@ namespace SimCity.ViewModel
             _model = model;
 
             _model.GameAdvanced += new EventHandler<SimCityArgsTime>(Model_AdvanceTime);
+            _model.GameBuild += new EventHandler<SimCityArgsClick>(Model_Build);
             
             //parancsok kezelése
             SpeedCommand = new DelegateCommand(param => OnSpeedChange(param));
@@ -134,8 +135,7 @@ namespace SimCity.ViewModel
         {
             foreach (SimCityField field in Fields) // inicializálni kell a mezőket is
                 field.SetZoneType = _model.Field[field.X, field.Y];
-
-            OnPropertyChanged();
+            
         }
 
         private void GenerateTable()
@@ -198,19 +198,27 @@ namespace SimCity.ViewModel
             RefreshTable();
         }
 
+        #endregion
+
+        #region Event Methods
         private void Model_AdvanceTime(object? sender, SimCityArgsTime e)
         {
             TimeElapsed = e.TimeElapsed;
             PopulationSum = e.Citizens;
             MoneySum = e.Money;
         }
-        #endregion
-
-        #region Event Methods
+        
+        private void Model_Build(object? sender, SimCityArgsClick e)
+        {
+            MoneySum = e.Money;
+            
+            RefreshTable();
+        }
         private void OnBuild(String param)
         {
             CurrentBuildAction = param;
         }
+
 
         private void OnSpeedChange(object param) => SpeedOfGame = Convert.ToString(param);
         
