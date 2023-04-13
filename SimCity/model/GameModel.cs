@@ -54,7 +54,7 @@ namespace SimCity.Model
             {
                 ++_timeElapsed;
                 _citizens += 10;
-                _money += _citizens * 10;
+                _money -= _field.getMaintenance();
             }
 
             this.GameAdvanced?.Invoke(this, new SimCityArgsTime(_timeElapsed, _citizens, _money));
@@ -62,17 +62,16 @@ namespace SimCity.Model
         
         public void ClickHandle(Int32 row, Int32 column, String mode, AreaType toBuild)
         {
-            Int32 cost = 0;
             switch (mode)
             {
-                case "Build": cost = _field.Build(row, column, toBuild);
+                case "Build": Int32 cost = _field.Build(row, column, toBuild);
+                    _money -= cost;
                     break;
-                case "Remove": _field.Remove(row, column);
+                case "Remove": Int32 prize = _field.Remove(row, column);
+                    _money += prize;
                     break;
             }
 
-            _money -= cost;
-            
             GameBuild?.Invoke(this, new SimCityArgsClick(_money));
         }
     }

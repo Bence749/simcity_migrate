@@ -48,16 +48,16 @@ public class Map
     
     public Int32 Build(Int32 row, Int32 column, AreaType toBuild)
     {
-        if (_fields[row, column].GetAreaType() == "None")
-        {
-            _fields[row, column] = toBuild;
-            return toBuild.BuildCost;
-        }
-        return 0;
+        if (_fields[row, column].GetAreaType() != "None") return 0;
+        _fields[row, column] = toBuild;
+        return toBuild.BuildCost;
     }
 
-    public void Remove(Int32 row, Int32 column)
+    public Int32 Remove(Int32 row, Int32 column)
     {
-        
+        if (_fields[row, column].GetAreaType() == "None") return 0;
+        Int32 prize = _fields[row, column].RemovePrice;
+        _fields[row, column] = new AreaType();
+        return prize;
     }
 }
