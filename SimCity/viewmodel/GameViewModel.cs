@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using SimCity.Model;
+using SimCity.Persistence;
 
 namespace SimCity.ViewModel
 {
@@ -122,8 +123,7 @@ namespace SimCity.ViewModel
                         Y = j,
                         Number = i * 100 + j, // a gomb sorszáma, amelyet felhasználunk az azonosításhoz
                         Text = String.Empty,
-                        ZoneType = 0
-
+                        SetZoneType = new AreaType()
                     });
                 }
             }
