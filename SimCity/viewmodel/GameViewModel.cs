@@ -73,11 +73,11 @@ namespace SimCity.ViewModel
 
         public Int32 Rows
         {
-            get => _model.Table.RowSize;
+            get => _model.Field.RowSize;
         }
         public Int32 Columns
         {
-            get => _model.Table.ColumnSize;
+            get => _model.Field.ColumnSize;
         }
 
         public string? SpeedOfGame
@@ -111,7 +111,7 @@ namespace SimCity.ViewModel
             //játék csatlakoztatása
             _model = model;
 
-            _model.GameAdvanced += new EventHandler<SimCityArgs>(Model_AdvanceTime);
+            _model.GameAdvanced += new EventHandler<SimCityArgsTime>(Model_AdvanceTime);
             
             //parancsok kezelése
             SpeedCommand = new DelegateCommand(param => OnSpeedChange(param));
@@ -133,28 +133,7 @@ namespace SimCity.ViewModel
         private void RefreshTable()
         {
             foreach (SimCityField field in Fields) // inicializálni kell a mezőket is
-            {
-                switch (_model.Table[field.X, field.Y])
-                {
-                    case AreaType.None:
-                        field.ZoneType = "None";
-                        break;
-                    case AreaType.Road:
-                        field.ZoneType = "Road";
-                        break;
-                    case AreaType.Living:
-                        field.ZoneType = "Living";
-                        break;
-                    case AreaType.Commercial:
-                        field.ZoneType = "Commercial";
-                        break;
-                    case AreaType.Industrial:
-                        field.ZoneType = "Industrial";
-                        break;
-                    default:
-                        break;
-                }
-            }
+                field.SetZoneType = _model.Field[field.X, field.Y];
 
             OnPropertyChanged();
         }
@@ -163,17 +142,17 @@ namespace SimCity.ViewModel
         {
             Fields.Clear();
 
-            for (Int32 i = 0; i < _model.Table.RowSize; i++) // inicializáljuk a mezőket
+            for (Int32 i = 0; i < _model.Field.RowSize; i++) // inicializáljuk a mezőket
             {
-                for (Int32 j = 0; j < _model.Table.ColumnSize; j++)
+                for (Int32 j = 0; j < _model.Field.ColumnSize; j++)
                 {
                     Fields.Add(new SimCityField
                     {
                         X = i,
                         Y = j,
-                        Number = i * _model.Table.RowSize + j, // a gomb sorszáma, amelyet felhasználunk az azonosításhoz
+                        Number = i * _model.Field.RowSize + j, // a gomb sorszáma, amelyet felhasználunk az azonosításhoz
                         Text = String.Empty,
-                        ZoneType = "None",
+                        SetZoneType = new AreaType(),
                         ClickCommand = new DelegateCommand(param => ClickField(Convert.ToInt32(param))),
                     });
                 }
@@ -188,25 +167,25 @@ namespace SimCity.ViewModel
             switch (CurrentBuildAction)
             {
                 case "Road":
-                    _model.ClickHandle(field.X, field.Y, "Build", AreaType.Road);
+                    _model.ClickHandle(field.X, field.Y, "Build", new Road());
                     break;
                 case "Living":
-                    _model.ClickHandle(field.X, field.Y, "Build", AreaType.Living);
+                    _model.ClickHandle(field.X, field.Y, "Build", new ResidentialZone());
                     break;
                 case "Commercial":
-                    _model.ClickHandle(field.X, field.Y, "Build", AreaType.Commercial);
+                    _model.ClickHandle(field.X, field.Y, "Build", new CommercialZone());
                     break;
                 case "Industrial":
-                    _model.ClickHandle(field.X, field.Y, "Build", AreaType.Industrial);
+                    _model.ClickHandle(field.X, field.Y, "Build", new IndustrialZone());
                     break;
                 case "Police":
-                    _model.ClickHandle(field.X, field.Y, "Build", AreaType.Police);
+                    _model.ClickHandle(field.X, field.Y, "Build", new Police());
                     break;
                 case "Stadium":
-                    _model.ClickHandle(field.X, field.Y, "Build", AreaType.Stadium);
+                    _model.ClickHandle(field.X, field.Y, "Build", new Stadium());
                     break;
                 case "Tree":
-                    _model.ClickHandle(field.X, field.Y, "Build", AreaType.Tree);
+                    _model.ClickHandle(field.X, field.Y, "Build", new Tree());
                     break;
                 default:
                     break;
@@ -219,7 +198,7 @@ namespace SimCity.ViewModel
             RefreshTable();
         }
 
-        private void Model_AdvanceTime(object? sender, SimCityArgs e)
+        private void Model_AdvanceTime(object? sender, SimCityArgsTime e)
         {
             TimeElapsed = e.TimeElapsed;
             PopulationSum = e.Citizens;

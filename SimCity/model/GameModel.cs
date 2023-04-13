@@ -19,7 +19,7 @@ namespace SimCity.Model
 {
     public class GameModel
     {
-        private Map _table = null!;
+        private Map _field = null!;
         private Int32 _timeElapsed;
         private Int32 _tickCount;
         private Int32 _money;
@@ -27,9 +27,9 @@ namespace SimCity.Model
 
         public PlaySpeed GamePace { get; set; }
 
-        public Map Table { get { return _table; } }
+        public Map Field { get { return _field; } }
 
-        public event EventHandler<SimCityArgs>? GameAdvanced;
+        public event EventHandler<SimCityArgsTime>? GameAdvanced;
 
         public GameModel()
         {
@@ -41,7 +41,7 @@ namespace SimCity.Model
 
         public void CreateGame(Int32 rows, Int32 columns)
         {
-            _table = new Map(rows, columns);
+            _field = new Map(rows, columns);
         }
 
         public void AdvanceTime()
@@ -56,17 +56,17 @@ namespace SimCity.Model
                 _money += _citizens * 10;
             }
 
-            this.GameAdvanced?.Invoke(this, new SimCityArgs(_timeElapsed, _citizens, _money));
+            this.GameAdvanced?.Invoke(this, new SimCityArgsTime(_timeElapsed, _citizens, _money));
         }
         
-        public void ClickHandle(Int32 row, Int32 column, String mode, AreaType toBuild = AreaType.None)
+        public void ClickHandle(Int32 row, Int32 column, String mode, AreaType toBuild)
         {
             Int32 cost = 0;
             switch (mode)
             {
-                case "Build": cost = _table.Build(row, column, toBuild);
+                case "Build": cost = _field.Build(row, column, toBuild);
                     break;
-                case "Remove": _table.Remove(row, column);
+                case "Remove": _field.Remove(row, column);
                     break;
             }
 

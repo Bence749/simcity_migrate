@@ -10,6 +10,8 @@ public class Map
     private AreaType[,] _fields;
 
     public AreaType this[Int32 x, Int32 y] => _fields[x, y];
+    public Int32 RowSize => _fields.GetLength(0);
+    public Int32 ColumnSize => _fields.GetLength(1);
     
     /// <summary>
     /// Constructor <c>Map</c> creating the desired map size and setting up the basic values
