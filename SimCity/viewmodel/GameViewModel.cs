@@ -5,7 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using SimCity.Model;
+using System.Net.Http.Headers;
 using SimCity.Persistence;
+using System.Runtime.ExceptionServices;
 
 namespace SimCity.ViewModel
 {
@@ -17,9 +19,10 @@ namespace SimCity.ViewModel
         private Int32 _timeElapsed = 0;
         private Int32 _moneySum = 0;
         private Int32 _populationSum = 0;
+        private String _currentBuildAction = String.Empty;
         public string? cityName; //add button and shit
-        
-        
+
+
         #endregion
 
         #region Properties
@@ -57,6 +60,26 @@ namespace SimCity.ViewModel
             }
         }
 
+        public String CurrentBuildAction
+        {
+            get => _currentBuildAction;
+            set
+            {
+                if (_currentBuildAction == value) return;
+                _currentBuildAction = value;
+            }
+        }
+
+
+        public Int32 Rows
+        {
+            get => _model.Table.RowSize;
+        }
+        public Int32 Columns
+        {
+            get => _model.Table.ColumnSize;
+        }
+
         public string? SpeedOfGame
         {
             get => _model.GamePace.ToString();
@@ -69,6 +92,7 @@ namespace SimCity.ViewModel
         }
         
         public DelegateCommand SpeedCommand { get; private set; }
+        public DelegateCommand BuildCommand { get; private set; }
         public DelegateCommand NewGameSmallCommand { get; private set; }
 
         public ObservableCollection<SimCityField> Fields { get; set; }
@@ -87,11 +111,13 @@ namespace SimCity.ViewModel
             //játék csatlakoztatása
             _model = model;
 
-            _model.GameAdvanced += new EventHandler<SimCityArgsTime>(Model_AdvanceTime);
+            _model.GameAdvanced += new EventHandler<SimCityArgs>(Model_AdvanceTime);
             
             //parancsok kezelése
             SpeedCommand = new DelegateCommand(param => OnSpeedChange(param));
             NewGameSmallCommand = new DelegateCommand(param => OnNewGameSmall());
+
+            BuildCommand = new DelegateCommand(param => OnBuild(Convert.ToString(param)));
 
 
             // játéktábla létrehozása
@@ -106,30 +132,94 @@ namespace SimCity.ViewModel
 
         private void RefreshTable()
         {
-            return;
+            foreach (SimCityField field in Fields) // inicializálni kell a mezőket is
+            {
+                switch (_model.Table[field.X, field.Y])
+                {
+                    case AreaType.None:
+                        field.ZoneType = "None";
+                        break;
+                    case AreaType.Road:
+                        field.ZoneType = "Road";
+                        break;
+                    case AreaType.Living:
+                        field.ZoneType = "Living";
+                        break;
+                    case AreaType.Commercial:
+                        field.ZoneType = "Commercial";
+                        break;
+                    case AreaType.Industrial:
+                        field.ZoneType = "Industrial";
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            OnPropertyChanged();
         }
 
         private void GenerateTable()
         {
             Fields.Clear();
 
-            for (Int32 i = 0; i < 50; i++) // inicializáljuk a mezőket
+            for (Int32 i = 0; i < _model.Table.RowSize; i++) // inicializáljuk a mezőket
             {
-                for (Int32 j = 0; j < 50; j++)
+                for (Int32 j = 0; j < _model.Table.ColumnSize; j++)
                 {
                     Fields.Add(new SimCityField
                     {
                         X = i,
                         Y = j,
-                        Number = i * 100 + j, // a gomb sorszáma, amelyet felhasználunk az azonosításhoz
+                        Number = i * _model.Table.RowSize + j, // a gomb sorszáma, amelyet felhasználunk az azonosításhoz
                         Text = String.Empty,
-                        SetZoneType = new AreaType()
+                        ZoneType = "None",
+                        ClickCommand = new DelegateCommand(param => ClickField(Convert.ToInt32(param))),
                     });
                 }
             }
         }
 
-        private void Model_AdvanceTime(object? sender, SimCityArgsTime e)
+        private void ClickField(Int32 index)
+        {
+            SimCityField field = Fields[index];
+
+            
+            switch (CurrentBuildAction)
+            {
+                case "Road":
+                    _model.ClickHandle(field.X, field.Y, "Build", AreaType.Road);
+                    break;
+                case "Living":
+                    _model.ClickHandle(field.X, field.Y, "Build", AreaType.Living);
+                    break;
+                case "Commercial":
+                    _model.ClickHandle(field.X, field.Y, "Build", AreaType.Commercial);
+                    break;
+                case "Industrial":
+                    _model.ClickHandle(field.X, field.Y, "Build", AreaType.Industrial);
+                    break;
+                case "Police":
+                    _model.ClickHandle(field.X, field.Y, "Build", AreaType.Police);
+                    break;
+                case "Stadium":
+                    _model.ClickHandle(field.X, field.Y, "Build", AreaType.Stadium);
+                    break;
+                case "Tree":
+                    _model.ClickHandle(field.X, field.Y, "Build", AreaType.Tree);
+                    break;
+                default:
+                    break;
+            }
+
+            CurrentBuildAction = "";
+            
+
+
+            RefreshTable();
+        }
+
+        private void Model_AdvanceTime(object? sender, SimCityArgs e)
         {
             TimeElapsed = e.TimeElapsed;
             PopulationSum = e.Citizens;
@@ -138,6 +228,10 @@ namespace SimCity.ViewModel
         #endregion
 
         #region Event Methods
+        private void OnBuild(String param)
+        {
+            CurrentBuildAction = param;
+        }
 
         private void OnSpeedChange(object param) => SpeedOfGame = Convert.ToString(param);
         
