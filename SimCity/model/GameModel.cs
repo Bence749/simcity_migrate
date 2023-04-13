@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using SimCity.Persistence;
 
 /// <summary>
@@ -18,7 +19,7 @@ namespace SimCity.Model
 {
     public class GameModel
     {
-        private Map? Fields;
+        private Map _field = null!;
         private Int32 _timeElapsed;
         private Int32 _tickCount;
         private Int32 _money;
@@ -26,7 +27,10 @@ namespace SimCity.Model
 
         public PlaySpeed GamePace { get; set; }
 
-        public event EventHandler<SimCityArgs>? GameAdvanced;
+        public Map Field { get { return _field; } }
+
+        public event EventHandler<SimCityArgsTime>? GameAdvanced;
+        public event EventHandler<SimCityArgsClick>? GameBuild;
 
         public GameModel()
         {
@@ -38,7 +42,7 @@ namespace SimCity.Model
 
         public void CreateGame(Int32 rows, Int32 columns)
         {
-            Fields = new Map(rows, columns);
+            _field = new Map(rows, columns);
         }
 
         public void AdvanceTime()
@@ -50,10 +54,25 @@ namespace SimCity.Model
             {
                 ++_timeElapsed;
                 _citizens += 10;
-                _money += _citizens * 10;
+                _money -= _field.getMaintenance();
             }
 
-            this.GameAdvanced?.Invoke(this, new SimCityArgs(_timeElapsed, _citizens, _money));
+            this.GameAdvanced?.Invoke(this, new SimCityArgsTime(_timeElapsed, _citizens, _money));
+        }
+        
+        public void ClickHandle(Int32 row, Int32 column, String mode, AreaType toBuild)
+        {
+            switch (mode)
+            {
+                case "Build": Int32 cost = _field.Build(row, column, toBuild);
+                    _money -= cost;
+                    break;
+                case "Remove": Int32 prize = _field.Remove(row, column);
+                    _money += prize;
+                    break;
+            }
+
+            GameBuild?.Invoke(this, new SimCityArgsClick(_money));
         }
     }
 }
