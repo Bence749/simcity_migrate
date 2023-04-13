@@ -112,9 +112,9 @@ namespace SimCity.ViewModel
         {
             Fields.Clear();
 
-            for (Int32 i = 0; i < 10; i++) // inicializáljuk a mezőket
+            for (Int32 i = 0; i < 50; i++) // inicializáljuk a mezőket
             {
-                for (Int32 j = 0; j < 10; j++)
+                for (Int32 j = 0; j < 50; j++)
                 {
                     Fields.Add(new SimCityField
                     {
@@ -122,7 +122,7 @@ namespace SimCity.ViewModel
                         Y = j,
                         Number = i * 100 + j, // a gomb sorszáma, amelyet felhasználunk az azonosításhoz
                         Text = String.Empty,
-
+                        ZoneType = 0
 
                     });
                 }
