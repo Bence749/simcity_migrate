@@ -58,13 +58,16 @@ namespace SimCity.Model
         
         public void ClickHandle(Int32 row, Int32 column, String mode, AreaType toBuild = AreaType.None)
         {
+            Int32 cost = 0;
             switch (mode)
             {
-                case "Build": _fields.Build(row, column, toBuild);
+                case "Build": cost = _fields.Build(row, column, toBuild);
                     break;
                 case "Remove": _fields.Remove(row, column);
                     break;
             }
+
+            _money -= cost;
         }
     }
 }
