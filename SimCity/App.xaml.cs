@@ -45,6 +45,7 @@ namespace SimCity
 
             // nézemodell létrehozása
             _viewModel = new GameViewModel(_model);
+            _viewModel.ExitGame += new EventHandler(ViewModel_ExitGame);
 
             // nézet létrehozása
             _view = new MainWindow();
@@ -83,6 +84,16 @@ namespace SimCity
                     _timer.Start();
             }
         }
+
+        #region ViewModel Event Handlers
+        /// <summary>
+        /// Játékból való kilépés eseménykezelője.
+        /// </summary>
+        private void ViewModel_ExitGame(object? sender, System.EventArgs e)
+        {
+            _view.Close(); // ablak bezárása
+        }
+        #endregion
 
         private void Timer_Tick(object? sender, EventArgs e)
         {

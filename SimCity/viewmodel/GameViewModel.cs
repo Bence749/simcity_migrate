@@ -70,6 +70,8 @@ namespace SimCity.ViewModel
         public DelegateCommand SpeedCommand { get; private set; }
         public DelegateCommand NewGameSmallCommand { get; private set; }
 
+        public DelegateCommand ExitCommand { get; private set; }
+
         public ObservableCollection<SimCityField> Fields { get; set; }
 
         #endregion
@@ -77,6 +79,11 @@ namespace SimCity.ViewModel
         #region Events
 
         public event EventHandler? NewGameSmall;
+
+        /// <summary>
+        /// Játékból való kilépés eseménye.
+        /// </summary>
+        public event EventHandler? ExitGame;
 
         #endregion
 
@@ -91,6 +98,7 @@ namespace SimCity.ViewModel
             //parancsok kezelése
             SpeedCommand = new DelegateCommand(param => OnSpeedChange(param));
             NewGameSmallCommand = new DelegateCommand(param => OnNewGameSmall());
+            ExitCommand = new DelegateCommand(param => OnExitGame());
 
 
             // játéktábla létrehozása
@@ -144,6 +152,11 @@ namespace SimCity.ViewModel
         private void OnNewGameSmall()
         {
             NewGameSmall?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OnExitGame()
+        {
+            ExitGame?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion
