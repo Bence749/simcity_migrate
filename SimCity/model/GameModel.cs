@@ -24,6 +24,8 @@ namespace SimCity.Model
         private Int32 _money;
         private Int32 _citizens;
 
+        public Map Fields => _fields;
+
         public PlaySpeed GamePace { get; set; }
 
         public event EventHandler<SimCityArgsTime>? GameAdvanced;
