@@ -60,9 +60,7 @@
             <ItemsControl.ItemTemplate>
                 <!--az elemek gombok lesznek-->
                 <DataTemplate>
-                    <Button Command="{Binding StepCommand}" CommandParameter="{Binding Number}" 
-                            Content="{Binding Text}" Focusable="False" RenderTransformOrigin="0.1, 0.1"
-                            FontSize="10" FontWeight="Bold">
+                    <Button Command="{Binding StepCommand}" CommandParameter="{Binding Number}" Content="{Binding Text}" Focusable="False" RenderTransformOrigin="0.1, 0.1" FontSize="10" FontWeight="Bold">
                         <!-- gomb háttérszíne -->
                         <!-- gomb méretezése (csak az animációnál használjuk ki) -->
                         <Button.RenderTransform>
