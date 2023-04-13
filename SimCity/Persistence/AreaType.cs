@@ -47,3 +47,24 @@ public class ResidentialZone : AreaType
     
     public override String GetAreaType() => "Residential";
 }
+
+public class Police : AreaType
+{
+    public Police() : base(100, 500, 100) { }
+    
+    public override String GetAreaType() => "Residential";
+}
+
+public class Stadium : AreaType
+{
+    public Stadium() : base(500, 1000, 100) { }
+    
+    public override String GetAreaType() => "Residential";
+}
+
+public class Tree : AreaType
+{
+    public Tree() : base(1, 50, 10) { }
+    
+    public override String GetAreaType() => "Residential";
+}
