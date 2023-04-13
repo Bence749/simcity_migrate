@@ -52,7 +52,7 @@
         <ItemsControl Grid.Row="1" ItemsSource="{Binding Fields}">
             <!--az mezőket tároló vezérlő-->
             <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
+                <ItemsPanelTemplate x:Name="GameField">
                     <!--a gombokat egy rácsba fűzzük fel-->
                     <UniformGrid Rows="50" Columns="50" />
                 </ItemsPanelTemplate>

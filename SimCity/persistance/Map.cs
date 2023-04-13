@@ -16,11 +16,11 @@ public class Map
     /// <summary>
     /// Constructor <c>Map</c> creating the desired map size and setting up the basic values
     /// </summary>
-    public Map()
+    public Map(Int32 rows, Int32 columns)
     {
-        _fields = new AreaType[256, 256];
+        _fields = new AreaType[rows, columns];
 
-        for (var i = 0; i < 256 * 256; ++i)
-            _fields[i / 256, i % 256] = AreaType.None;
+        for (var i = 0; i < rows * columns; ++i)
+            _fields[i / rows, i % columns] = AreaType.None;
     }
 }

@@ -1,7 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
+using System.Windows.Markup;
+using System.Windows.Media;
 using Microsoft.Win32;
 using SimCity.View;
 using SimCity.ViewModel;
@@ -18,7 +22,7 @@ namespace SimCity
 
         private GameModel _model = null!;
         private GameViewModel _viewModel = null!;
-        private MainWindow _view = null!;
+        private MainWindow? _view;
         private DispatcherTimer _timer = null!;
 
         #endregion
@@ -36,9 +40,9 @@ namespace SimCity
 
         private void App_Startup(object? sender, StartupEventArgs e)
         {
-            // modell létrehozása
+            // modell létrehozás
             _model = new GameModel();
-            
+
             // nézemodell létrehozása
             _viewModel = new GameViewModel(_model);
 
@@ -47,6 +51,14 @@ namespace SimCity
             _view.DataContext = _viewModel;
             _view.Closing += new System.ComponentModel.CancelEventHandler(View_Closing); // eseménykezelés a bezáráshoz
             _view.Show();
+
+            // Get the size of the defined grid and create the model accordingly
+            var itemPanel = (ItemsPanelTemplate?)_view.FindName("GameField");
+            if (itemPanel is not null)
+            {
+                var gridContent = (UniformGrid)itemPanel.LoadContent();
+                _model.CreateGame(gridContent.Rows, gridContent.Columns);
+            }
 
             // időzítő létrehozása
             _timer = new DispatcherTimer();
