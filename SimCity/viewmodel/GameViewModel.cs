@@ -161,41 +161,43 @@ namespace SimCity.ViewModel
 
         private void ClickField(Int32 index)
         {
-            SimCityField field = Fields[index];
-
-            
-            switch (CurrentBuildAction)
+            if (CurrentBuildAction != "")
             {
-                case "Road":
-                    _model.ClickHandle(field.X, field.Y, "Build", new Road());
-                    break;
-                case "Living":
-                    _model.ClickHandle(field.X, field.Y, "Build", new ResidentialZone());
-                    break;
-                case "Commercial":
-                    _model.ClickHandle(field.X, field.Y, "Build", new CommercialZone());
-                    break;
-                case "Industrial":
-                    _model.ClickHandle(field.X, field.Y, "Build", new IndustrialZone());
-                    break;
-                case "Police":
-                    _model.ClickHandle(field.X, field.Y, "Build", new Police());
-                    break;
-                case "Stadium":
-                    _model.ClickHandle(field.X, field.Y, "Build", new Stadium());
-                    break;
-                case "Tree":
-                    _model.ClickHandle(field.X, field.Y, "Build", new Tree());
-                    break;
-                default:
-                    break;
+                SimCityField field = Fields[index];
+                var paramsToClick = CurrentBuildAction.Split(' ');
+
+                if (paramsToClick[0] == "Remove")
+                    _model.ClickHandle(field.X, field.Y, paramsToClick[0]);
+                else
+                    switch (paramsToClick[1])
+                    {
+                        case "Road":
+                            _model.ClickHandle(field.X, field.Y, "Build", new Road());
+                            break;
+                        case "Living":
+                            _model.ClickHandle(field.X, field.Y, "Build", new ResidentialZone());
+                            break;
+                        case "Commercial":
+                            _model.ClickHandle(field.X, field.Y, "Build", new CommercialZone());
+                            break;
+                        case "Industrial":
+                            _model.ClickHandle(field.X, field.Y, "Build", new IndustrialZone());
+                            break;
+                        case "Police":
+                            _model.ClickHandle(field.X, field.Y, "Build", new Police());
+                            break;
+                        case "Stadium":
+                            _model.ClickHandle(field.X, field.Y, "Build", new Stadium());
+                            break;
+                        case "Tree":
+                            _model.ClickHandle(field.X, field.Y, "Build", new Tree());
+                            break;
+                    }
+
+                CurrentBuildAction = "";
+                
+                RefreshTable();
             }
-
-            CurrentBuildAction = "";
-            
-
-
-            RefreshTable();
         }
 
         #endregion
@@ -213,7 +215,6 @@ namespace SimCity.ViewModel
             MoneySum = e.Money;
             
             RefreshTable();
-            OnPropertyChanged(nameof(Fields));
         }
         private void OnBuild(String param)
         {
