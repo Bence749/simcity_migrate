@@ -30,17 +30,7 @@ public class Map
 
         foreach (AreaType field in _fields)
         {
-            switch (field.GetAreaType())
-            {
-                case "Road":
-                    
-                case "Residential": sumMaintenance += field.MaintenanceCost;
-                    break;
-                case "Commercial": sumMaintenance += field.MaintenanceCost;
-                    break;
-                case "Industrial": sumMaintenance += field.MaintenanceCost;
-                    break;
-            }
+            sumMaintenance += field.MaintenanceCost;
         }
         
         return sumMaintenance;

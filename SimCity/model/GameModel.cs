@@ -60,7 +60,7 @@ namespace SimCity.Model
             this.GameAdvanced?.Invoke(this, new SimCityArgsTime(_timeElapsed, _citizens, _money));
         }
         
-        public void ClickHandle(Int32 row, Int32 column, String mode, AreaType toBuild)
+        public void ClickHandle(Int32 row, Int32 column, String mode, AreaType toBuild = null!)
         {
             switch (mode)
             {
