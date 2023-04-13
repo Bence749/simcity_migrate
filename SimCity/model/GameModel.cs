@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SimCity.Persistence;
 
 /// <summary>
 /// Enum <c>PlaySpeed</c> define the pace of the game.
@@ -17,7 +18,7 @@ namespace SimCity.Model
 {
     public class GameModel
     {
-
+        private Map Fields;
         private Int32 _timeElapsed;
         private Int32 _tickCount;
         private Int32 _money;
@@ -27,12 +28,13 @@ namespace SimCity.Model
 
         public event EventHandler<SimCityArgs>? GameAdvanced;
 
-        public GameModel()
+        public GameModel(Int32 rows, Int32 columns)
         {
             _timeElapsed = 0;
             _money = 100000;
             _citizens = 0;
             GamePace = PlaySpeed.Normal;
+            Fields = new Map(rows, columns);
         }
 
         public void AdvanceTime()
