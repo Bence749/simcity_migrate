@@ -1,4 +1,4 @@
-﻿<Window x:Class="SimCity.View.MainWindow"
+<Window x:Class="SimCity.View.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -160,6 +160,7 @@
                 <MenuItem Header="Út" Command="{Binding BuildCommand}" CommandParameter="Build Road"/>
             </MenuItem>
             <MenuItem Header="Bontás" Command="{Binding BuildCommand}" CommandParameter="Remove"/>
+            <MenuItem Header="Info" Command="{Binding InfoCommand}"/>
         </Menu>
     </Grid>
 </Window>
