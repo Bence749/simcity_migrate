@@ -151,6 +151,7 @@
                 <MenuItem Header="Út" Command="{Binding BuildCommand}" CommandParameter="Road"/>
             </MenuItem>
             <MenuItem Header="Bontás" Command="{Binding DemolishCommand}"/>
+            <MenuItem Header="Info" Command="{Binding InfoCommand}"/>
         </Menu>
     </Grid>
 </Window>

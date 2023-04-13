@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +8,7 @@ using SimCity.Model;
 using System.Net.Http.Headers;
 using SimCity.Persistence;
 using System.Runtime.ExceptionServices;
+using System.Windows;
 
 namespace SimCity.ViewModel
 {
@@ -95,6 +96,12 @@ namespace SimCity.ViewModel
         public DelegateCommand BuildCommand { get; private set; }
         public DelegateCommand NewGameSmallCommand { get; private set; }
 
+
+        public DelegateCommand InfoCommand { get; private set; }
+
+        public DelegateCommand ExitCommand { get; private set; }
+
+
         public ObservableCollection<SimCityField> Fields { get; set; }
 
         #endregion
@@ -102,6 +109,11 @@ namespace SimCity.ViewModel
         #region Events
 
         public event EventHandler? NewGameSmall;
+
+        /// <summary>
+        /// Játékból való kilépés eseménye.
+        /// </summary>
+        public event EventHandler? ExitGame;
 
         #endregion
 
@@ -120,6 +132,11 @@ namespace SimCity.ViewModel
 
             BuildCommand = new DelegateCommand(param => OnBuild(Convert.ToString(param)));
 
+            InfoCommand = new DelegateCommand(param => InfoPanel());
+
+            ExitCommand = new DelegateCommand(param => OnExitGame());
+
+
 
             // játéktábla létrehozása
             Fields = new ObservableCollection<SimCityField>();
@@ -136,6 +153,16 @@ namespace SimCity.ViewModel
             foreach (SimCityField field in Fields) // inicializálni kell a mezőket is
                 field.ZoneType = _model.Field[field.X, field.Y].GetAreaType();
             
+        }
+
+        //az infopanel mindig megállítja a játékot, majd 1-es sebességen (Normal) indítja újra, ha bezárul a felugró ablak
+        private void InfoPanel()
+        {
+            //string tmpSpeed = SpeedOfGame;
+            SpeedOfGame = Convert.ToString(0);
+            MessageBox.Show("Dikh, itt egy lorem ipsum \n\nSimCity, a városépítő játék\n\n\nPénz: Ebből tudod finanszírozni nagyszerű városod fejlesztését.\n\nElégedettség: Megmutatja mennyire elégíted ki a lakosaid igényeit. Meghatározza a betelepülés sebességét. Ha túl alacsonra esne, elveszíted a játékot.\n\nLakosság: A városodban élő polgárok. Adót fizetnek, évente. Maguktól jönnek a városba és keresnek munkát, amennyiben van szabad munka- és lakóhely számukra.\n\nIdő: Az eltelt évek száma.\n\nSebesség: a szimuláció sebessége.\nStop: a játék áll. \nNormal: 1 másodperc = 1 év. \nFast: 1 másodperc = 2 év. \nFaster: 1 másodperc = 4 év", "SzimSziti", MessageBoxButton.OK, MessageBoxImage.Information);
+            //SpeedOfGame = tmpSpeed;
+            SpeedOfGame = Convert.ToString(1);
         }
 
         private void GenerateTable()
@@ -226,6 +253,11 @@ namespace SimCity.ViewModel
         private void OnNewGameSmall()
         {
             NewGameSmall?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OnExitGame()
+        {
+            ExitGame?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion
