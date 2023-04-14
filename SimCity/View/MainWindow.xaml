@@ -1,12 +1,166 @@
-﻿<Window x:Class="SimCity.View.MainWindow"
+<Window x:Class="SimCity.View.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SimCity"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="650" Width="1000">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
+        <StatusBar Grid.Row="0">
+            <StatusBarItem>
+                <TextBlock Text="Pénz: "/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding MoneySum}"/>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock Text="Elégedettség: "/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding HappySum}"/>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock Text="Lakosság: "/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding PopulationSum}"/>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock Text="Idő: "/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding TimeElapsed}"/>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock Text="Sebesség: "/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding SpeedOfGame}"/>
+            </StatusBarItem>
+        </StatusBar>
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding Fields}">
+            <!--az mezőket tároló vezérlő-->
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate x:Name="GameField">
+                    <!--a gombokat egy rácsba fűzzük fel-->
+                    <UniformGrid Rows="{Binding Rows}" Columns="{Binding Columns}" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <!--az elemek gombok lesznek-->
+                <DataTemplate>
+                    <Button Command="{Binding ClickCommand}" CommandParameter="{Binding Number}" Content="{Binding Text}" Focusable="False" RenderTransformOrigin="0.1, 0.1" FontSize="10" FontWeight="Bold">
+                        <!-- gomb háttérszíne -->
+                        <!-- gomb méretezése (csak az animációnál használjuk ki) -->
+                        <Button.RenderTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1" />
+                        </Button.RenderTransform>
+                        <Button.Style>
+                            <!-- gomb stílusa, ahol a színét megadjuk -->
+                            <Style TargetType="Button">
+                                <Style.Triggers>
+                                    <!-- a szín egy adatkötés hatására fog változni -->
+                                    <DataTrigger Binding="{Binding ZoneType}" Value="None">
+                                        <Setter Property="Background" Value="White" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ZoneType}" Value="Residential">
+                                        <Setter Property="Background" Value="Green" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ZoneType}" Value="Commercial">
+                                        <Setter Property="Background" Value="Yellow" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ZoneType}" Value="Industrial">
+                                        <Setter Property="Background" Value="Red" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ZoneType}" Value="Road">
+                                        <Setter Property="Background" Value="Black" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ZoneType}" Value="Police">
+                                        <Setter Property="Background" Value="Blue" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ZoneType}" Value="Stadium">
+                                        <Setter Property="Background" Value="Orange" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ZoneType}" Value="Tree">
+                                        <Setter Property="Background" Value="DarkGreen" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <Button.Triggers>
+                            <!-- animációk végrehajtása esemény hatására -->
+                            <EventTrigger RoutedEvent="Button.Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Duration="0:00:02" From="0" To="1" Storyboard.TargetProperty="Opacity" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="Button.Click">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimationUsingKeyFrames Duration="0:00:00.2" Storyboard.TargetProperty="(Foreground).(SolidColorBrush.Color)">
+                                            <ColorAnimationUsingKeyFrames.KeyFrames>
+                                                <DiscreteColorKeyFrame Value="Blue" KeyTime="0:00:00" />
+                                                <DiscreteColorKeyFrame Value="Black" KeyTime="0:00:00.2" />
+                                            </ColorAnimationUsingKeyFrames.KeyFrames>
+                                        </ColorAnimationUsingKeyFrames>
+                                        <DoubleAnimation Duration="0:00:00.1" From="1" To="0.5" AutoReverse="True" Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleX)" />
+                                        <DoubleAnimation Duration="0:00:00.1" From="1" To="0.5" AutoReverse="True" Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleY)" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.ItemContainerStyle>
+                <!--a függőségi tulajdonságokat kjülön kell kötnünk-->
+                <Style>
+                    <Setter Property="Grid.Column" Value="{Binding Y}" />
+                    <Setter Property="Grid.Row" Value="{Binding X}" />
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+        </ItemsControl>
+        <Menu Grid.Row="2">
+            <MenuItem Header="Fájl">
+                <MenuItem Header="Új játék" Command="{Binding NewGameCommand}" />
+                <Separator />
+                <MenuItem Header="Játék betöltése..." Command="{Binding LoadGameCommand}" />
+                <MenuItem Header="Játék mentése..." Command="{Binding SaveGameCommand}" />
+                <Separator />
+                <MenuItem Header="Kilépés" Command="{Binding ExitCommand}" />
+            </MenuItem>
+            <MenuItem Header="Szünet" Command="{Binding SpeedCommand}" CommandParameter="0"/>
+            <MenuItem Header="Normál" Command="{Binding SpeedCommand}" CommandParameter="1"/>
+            <MenuItem Header="Gyors" Command="{Binding SpeedCommand}" CommandParameter="2"/>
+            <MenuItem Header="Gyorsabb" Command="{Binding SpeedCommand}" CommandParameter="3"/>
+            <MenuItem Header="Építés">
+                <MenuItem Header="Zóna">
+                    <MenuItem Header="Lakó" Command="{Binding BuildCommand}" CommandParameter="Build Living"/>
+                    <MenuItem Header="Ipari" Command="{Binding BuildCommand}" CommandParameter="Build Industrial"/>
+                    <MenuItem Header="Kereskedelmi" Command="{Binding BuildCommand}" CommandParameter="Build Commercial"/>
+                </MenuItem>
+                <MenuItem Header="Szolgáltató">
+                    <MenuItem Header="Rendőrség" Command="{Binding BuildCommand}" CommandParameter="Build Police"/>
+                    <MenuItem Header="Stadion" Command="{Binding BuildCommand}" CommandParameter="Build Stadium"/>
+                    <MenuItem Header="Fa" Command="{Binding BuildCommand}" CommandParameter="Build Tree"/>
+                </MenuItem>
+                <MenuItem Header="Út" Command="{Binding BuildCommand}" CommandParameter="Build Road"/>
+            </MenuItem>
+            <MenuItem Header="Bontás" Command="{Binding BuildCommand}" CommandParameter="Remove"/>
+            <MenuItem Header="Info" Command="{Binding InfoCommand}"/>
+        </Menu>
     </Grid>
 </Window>
