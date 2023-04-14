@@ -42,7 +42,6 @@ namespace SimCity
         {
             // modell létrehozás
             _model = new GameModel();
-            _model.CreateGame(10, 10);
 
             // nézemodell létrehozása
             _viewModel = new GameViewModel(_model);
@@ -50,19 +49,22 @@ namespace SimCity
 
             // nézet létrehozása
             _view = new MainWindow();
-            _view.DataContext = _viewModel;
-            _view.Closing += new System.ComponentModel.CancelEventHandler(View_Closing); // eseménykezelés a bezáráshoz
-            _view.Show();
-
-            /* Not necessary
+            
             // Get the size of the defined grid and create the model accordingly
             var itemPanel = (ItemsPanelTemplate?)_view.FindName("GameField");
             if (itemPanel is not null)
             {
                 var gridContent = (UniformGrid)itemPanel.LoadContent();
-                _model.CreateGame(gridContent.Rows, gridContent.Columns);
+                _viewModel.View_CreateGame(gridContent.Rows, gridContent.Columns);
             }
-            */
+            
+            _view.DataContext = _viewModel;
+            _view.Closing += new System.ComponentModel.CancelEventHandler(View_Closing); // eseménykezelés a bezáráshoz
+            _view.Show();
+
+
+            
+            
 
             // időzítő létrehozása
             _timer = new DispatcherTimer();

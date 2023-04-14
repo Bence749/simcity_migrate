@@ -139,9 +139,7 @@ namespace SimCity.ViewModel
 
 
             // játéktábla létrehozása
-            Fields = new ObservableCollection<SimCityField>();
-            GenerateTable();
-            RefreshTable();
+            
 
         }
         #endregion
@@ -230,6 +228,15 @@ namespace SimCity.ViewModel
         #endregion
 
         #region Event Methods
+
+        public void View_CreateGame(Int32 row, Int32 col)
+        {
+            _model.CreateGame(row, col);
+            
+            Fields = new ObservableCollection<SimCityField>();
+            GenerateTable();
+            RefreshTable();
+        }
         private void Model_AdvanceTime(object? sender, SimCityArgsTime e)
         {
             TimeElapsed = e.TimeElapsed;

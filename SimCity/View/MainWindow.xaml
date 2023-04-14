@@ -54,7 +54,7 @@
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate x:Name="GameField">
                     <!--a gombokat egy rácsba fűzzük fel-->
-                    <UniformGrid Rows="{Binding Rows}" Columns="{Binding Columns}" />
+                    <UniformGrid Rows="50" Columns="50" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
