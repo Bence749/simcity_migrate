@@ -158,7 +158,7 @@ namespace SimCity.ViewModel
         {
             //string tmpSpeed = SpeedOfGame;
             SpeedOfGame = Convert.ToString(0);
-            MessageBox.Show("Dikh, itt egy lorem ipsum \n\nSimCity, a városépítő játék\n\n\nPénz: Ebből tudod finanszírozni nagyszerű városod fejlesztését.\n\nElégedettség: Megmutatja mennyire elégíted ki a lakosaid igényeit. Meghatározza a betelepülés sebességét. Ha túl alacsonra esne, elveszíted a játékot.\n\nLakosság: A városodban élő polgárok. Adót fizetnek, évente. Maguktól jönnek a városba és keresnek munkát, amennyiben van szabad munka- és lakóhely számukra.\n\nIdő: Az eltelt évek száma.\n\nSebesség: a szimuláció sebessége.\nStop: a játék áll. \nNormal: 1 másodperc = 1 év. \nFast: 1 másodperc = 2 év. \nFaster: 1 másodperc = 4 év", "SzimSziti", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("SimCity, a városépítő játék\n\n\nPénz: Ebből tudod finanszírozni nagyszerű városod fejlesztését.\n\nElégedettség: Megmutatja mennyire elégíted ki a lakosaid igényeit. Meghatározza a betelepülés sebességét. Ha túl alacsonra esne, elveszíted a játékot.\n\nLakosság: A városodban élő polgárok. Adót fizetnek, évente. Maguktól jönnek a városba és keresnek munkát, amennyiben van szabad munka- és lakóhely számukra.\n\nIdő: Az eltelt évek száma.\n\nSebesség: a szimuláció sebessége.\nStop: a játék áll. \nNormal: 1 másodperc = 1 hónap. \nFast: 1 másodperc = 2 hónap. \nFaster: 1 másodperc = 4 hónap", "SimCity", MessageBoxButton.OK, MessageBoxImage.Information);
             //SpeedOfGame = tmpSpeed;
             SpeedOfGame = Convert.ToString(1);
         }

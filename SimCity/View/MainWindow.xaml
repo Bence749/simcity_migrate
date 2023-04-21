@@ -13,42 +13,36 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <StatusBar Grid.Row="0">
-            <StatusBarItem>
-                <TextBlock Text="Pénz: "/>
-            </StatusBarItem>
-            <StatusBarItem>
-                <TextBlock Text="{Binding MoneySum}"/>
-            </StatusBarItem>
-            <Separator/>
-            <StatusBarItem>
-                <TextBlock Text="Elégedettség: "/>
-            </StatusBarItem>
-            <StatusBarItem>
-                <TextBlock Text="{Binding HappySum}"/>
-            </StatusBarItem>
-            <Separator/>
-            <StatusBarItem>
-                <TextBlock Text="Lakosság: "/>
-            </StatusBarItem>
-            <StatusBarItem>
-                <TextBlock Text="{Binding PopulationSum}"/>
-            </StatusBarItem>
-            <Separator/>
-            <StatusBarItem>
-                <TextBlock Text="Idő: "/>
-            </StatusBarItem>
-            <StatusBarItem>
-                <TextBlock Text="{Binding TimeElapsed}"/>
-            </StatusBarItem>
-            <Separator/>
-            <StatusBarItem>
-                <TextBlock Text="Sebesség: "/>
-            </StatusBarItem>
-            <StatusBarItem>
-                <TextBlock Text="{Binding SpeedOfGame}"/>
-            </StatusBarItem>
-        </StatusBar>
+        <Menu Grid.Row="0">
+            <MenuItem Header="Fájl">
+                <MenuItem Header="Új játék" Command="{Binding NewGameCommand}" />
+                <Separator />
+                <MenuItem Header="Játék betöltése..." Command="{Binding LoadGameCommand}" />
+                <MenuItem Header="Játék mentése..." Command="{Binding SaveGameCommand}" />
+                <Separator />
+                <MenuItem Header="Kilépés" Command="{Binding ExitCommand}" />
+            </MenuItem>
+            <MenuItem Header="Szünet" Command="{Binding SpeedCommand}" CommandParameter="0"/>
+            <MenuItem Header="Normál" Command="{Binding SpeedCommand}" CommandParameter="1"/>
+            <MenuItem Header="Gyors" Command="{Binding SpeedCommand}" CommandParameter="2"/>
+            <MenuItem Header="Gyorsabb" Command="{Binding SpeedCommand}" CommandParameter="3"/>
+            <MenuItem Header="Építés">
+                <MenuItem Header="Zóna">
+                    <MenuItem Header="Lakó" Command="{Binding BuildCommand}" CommandParameter="Build Living"/>
+                    <MenuItem Header="Ipari" Command="{Binding BuildCommand}" CommandParameter="Build Industrial"/>
+                    <MenuItem Header="Kereskedelmi" Command="{Binding BuildCommand}" CommandParameter="Build Commercial"/>
+                </MenuItem>
+                <MenuItem Header="Szolgáltató">
+                    <MenuItem Header="Rendőrség" Command="{Binding BuildCommand}" CommandParameter="Build Police"/>
+                    <MenuItem Header="Stadion" Command="{Binding BuildCommand}" CommandParameter="Build Stadium"/>
+                    <MenuItem Header="Fa" Command="{Binding BuildCommand}" CommandParameter="Build Tree"/>
+                </MenuItem>
+                <MenuItem Header="Út" Command="{Binding BuildCommand}" CommandParameter="Build Road"/>
+            </MenuItem>
+            <MenuItem Header="Bontás" Command="{Binding BuildCommand}" CommandParameter="Remove"/>
+            <MenuItem Header="Info" Command="{Binding InfoCommand}"/>
+        </Menu>
+       
         <ItemsControl Grid.Row="1" ItemsSource="{Binding Fields}">
             <!--az mezőket tároló vezérlő-->
             <ItemsControl.ItemsPanel>
@@ -133,34 +127,41 @@
                 </Style>
             </ItemsControl.ItemContainerStyle>
         </ItemsControl>
-        <Menu Grid.Row="2">
-            <MenuItem Header="Fájl">
-                <MenuItem Header="Új játék" Command="{Binding NewGameCommand}" />
-                <Separator />
-                <MenuItem Header="Játék betöltése..." Command="{Binding LoadGameCommand}" />
-                <MenuItem Header="Játék mentése..." Command="{Binding SaveGameCommand}" />
-                <Separator />
-                <MenuItem Header="Kilépés" Command="{Binding ExitCommand}" />
-            </MenuItem>
-            <MenuItem Header="Szünet" Command="{Binding SpeedCommand}" CommandParameter="0"/>
-            <MenuItem Header="Normál" Command="{Binding SpeedCommand}" CommandParameter="1"/>
-            <MenuItem Header="Gyors" Command="{Binding SpeedCommand}" CommandParameter="2"/>
-            <MenuItem Header="Gyorsabb" Command="{Binding SpeedCommand}" CommandParameter="3"/>
-            <MenuItem Header="Építés">
-                <MenuItem Header="Zóna">
-                    <MenuItem Header="Lakó" Command="{Binding BuildCommand}" CommandParameter="Build Living"/>
-                    <MenuItem Header="Ipari" Command="{Binding BuildCommand}" CommandParameter="Build Industrial"/>
-                    <MenuItem Header="Kereskedelmi" Command="{Binding BuildCommand}" CommandParameter="Build Commercial"/>
-                </MenuItem>
-                <MenuItem Header="Szolgáltató">
-                    <MenuItem Header="Rendőrség" Command="{Binding BuildCommand}" CommandParameter="Build Police"/>
-                    <MenuItem Header="Stadion" Command="{Binding BuildCommand}" CommandParameter="Build Stadium"/>
-                    <MenuItem Header="Fa" Command="{Binding BuildCommand}" CommandParameter="Build Tree"/>
-                </MenuItem>
-                <MenuItem Header="Út" Command="{Binding BuildCommand}" CommandParameter="Build Road"/>
-            </MenuItem>
-            <MenuItem Header="Bontás" Command="{Binding BuildCommand}" CommandParameter="Remove"/>
-            <MenuItem Header="Info" Command="{Binding InfoCommand}"/>
-        </Menu>
+        <StatusBar Grid.Row="2">
+            <StatusBarItem>
+                <TextBlock Text="Pénz: "/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding MoneySum}"/>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock Text="Elégedettség: "/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding HappySum}"/>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock Text="Lakosság: "/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding PopulationSum}"/>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock Text="Idő: "/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding TimeElapsed}"/>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock Text="Sebesség: "/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding SpeedOfGame}"/>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </Window>
