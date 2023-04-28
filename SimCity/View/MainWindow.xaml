@@ -39,7 +39,16 @@
                 <TextBlock Text="Idő: "/>
             </StatusBarItem>
             <StatusBarItem>
-                <TextBlock Text="{Binding TimeElapsed}"/>
+                <TextBlock Text="{Binding Years}"/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="év, "/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding Months}"/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="hónap"/>
             </StatusBarItem>
             <Separator/>
             <StatusBarItem>

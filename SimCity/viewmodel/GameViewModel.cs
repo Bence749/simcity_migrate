@@ -18,6 +18,8 @@ namespace SimCity.ViewModel
 
         private readonly GameModel _model;
         private Int32 _timeElapsed = 0;
+        private Int32 _years = 0;
+        private Int32 _months = 0;
         private Int32 _moneySum = 0;
         private Int32 _populationSum = 0;
         private String _currentBuildAction = String.Empty;
@@ -27,6 +29,28 @@ namespace SimCity.ViewModel
         #endregion
 
         #region Properties
+
+        public Int32 Months
+        {
+            get => _months;
+            set
+            {
+                if (_months == value) return;
+                _months = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Int32 Years
+        {
+            get => _years;
+            set
+            {
+                if (_years == value) return;
+                _years = value;
+                OnPropertyChanged();
+            }
+        }
 
         public Int32 TimeElapsed
         {
@@ -184,6 +208,12 @@ namespace SimCity.ViewModel
             }
         }
 
+        private void ConvertTime()
+        {
+            Months = TimeElapsed;
+            Years = Months / 12;
+            Months = Months % 12;
+        }
         private void ClickField(Int32 index)
         {
             if (CurrentBuildAction != "")
@@ -242,6 +272,7 @@ namespace SimCity.ViewModel
             TimeElapsed = e.TimeElapsed;
             PopulationSum = e.Citizens;
             MoneySum = e.Money;
+            ConvertTime();
         }
         
         private void Model_Build(object? sender, SimCityArgsClick e)
