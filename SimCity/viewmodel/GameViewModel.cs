@@ -95,12 +95,11 @@ namespace SimCity.ViewModel
         public DelegateCommand SpeedCommand { get; private set; }
         public DelegateCommand BuildCommand { get; private set; }
         public DelegateCommand NewGameSmallCommand { get; private set; }
-
+        public DelegateCommand CatastopheCommand { get; private set; }
 
         public DelegateCommand InfoCommand { get; private set; }
 
         public DelegateCommand ExitCommand { get; private set; }
-
 
         public ObservableCollection<SimCityField> Fields { get; set; }
 
@@ -134,6 +133,8 @@ namespace SimCity.ViewModel
 
             InfoCommand = new DelegateCommand(param => InfoPanel());
 
+            CatastopheCommand = new DelegateCommand(param => ForestFire());
+
             ExitCommand = new DelegateCommand(param => OnExitGame());
 
 
@@ -163,6 +164,23 @@ namespace SimCity.ViewModel
             SpeedOfGame = Convert.ToString(1);
         }
 
+        //a tűzvész 20% eséllyel Lebontja az egyes erdőket
+        private void ForestFire()
+        {
+            Random rnd = new Random();
+            foreach (SimCityField field in Fields)
+            {
+                if(field.ZoneType == "Tree") 
+                {
+                    if(rnd.Next(1,5) == 1)
+                    {
+                       _model.ClickHandle(field.X, field.Y, "Remove"); //remove 'building' on field
+                    }
+                }
+            }
+
+            RefreshTable();
+        }
         private void GenerateTable()
         {
             Fields.Clear();

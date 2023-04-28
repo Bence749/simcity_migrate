@@ -41,6 +41,7 @@
             </MenuItem>
             <MenuItem Header="Bontás" Command="{Binding BuildCommand}" CommandParameter="Remove"/>
             <MenuItem Header="Info" Command="{Binding InfoCommand}"/>
+            <MenuItem Header="Erdőtűz" Command="{Binding CatastopheCommand}"/>
         </Menu>
        
         <ItemsControl Grid.Row="1" ItemsSource="{Binding Fields}">
