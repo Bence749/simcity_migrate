@@ -34,9 +34,7 @@ public class Map
             _fields[(int) Math.Floor(middle) + 1, 0] = _fields[(int) Math.Ceiling(middle) - 1, 0] = new Road();
         }
         else
-        {
             _fields[rows / 2 - 1, 0] = _fields[(rows / 2) + 1, 0] = new Road();
-        }
     }
 
     public Int32 maxCitizens()
@@ -65,6 +63,7 @@ public class Map
     public Int32 Build(Int32 row, Int32 column, AreaType toBuild)
     {
         if (_fields[row, column].GetAreaType() != "None") return 0;
+        if (NeighbouringFields(row, column).All(f => f.GetAreaType() != "Road")) return 0;
         _fields[row, column] = toBuild;
         return toBuild.BuildCost;
     }
@@ -95,5 +94,17 @@ public class Map
                     output.Add(area.Index);
 
         return output;
+    }
+
+    private List<AreaType> NeighbouringFields(Int32 row, Int32 col)
+    {
+        var output = from i in Enumerable.Range(row - 1, 3)
+                                       from j in Enumerable.Range(col - 1, 3)
+                                       where i >=  0 && i < RowSize && j >= 0 
+                                             && j < ColumnSize && (i != row || j != col)
+                                       select _fields[i, j];
+
+        return output.ToList();
+
     }
 }
