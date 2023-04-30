@@ -13,7 +13,7 @@ namespace SimCity.ViewModel
         private string _text = String.Empty;
 
         /// <summary>
-        /// 0 ha lakózóna, 1 ha ipari, 2 ha kereskedelmi
+        /// 
         /// </summary>
         public String ZoneType
         {
