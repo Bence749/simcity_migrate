@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Windows.Media;
 
@@ -8,6 +9,7 @@ namespace SimCity.Persistence;
 /// <summary>
 /// Class <c>Map</c> storing the necessary map data 
 /// </summary>
+[SuppressMessage("ReSharper", "PossibleLossOfFraction")]
 public class Map
 {
     private AreaType[,] _fields;
@@ -25,8 +27,29 @@ public class Map
 
         for (var i = 0; i < rows * columns; ++i)
             _fields[i / rows, i % columns] = new AreaType();
+        
+        if(rows % 2 == 1)
+        {
+            double middle = rows / 2;
+            _fields[(int) Math.Floor(middle) + 1, 0] = _fields[(int) Math.Ceiling(middle) - 1, 0] = new Road();
+        }
+        else
+        {
+            _fields[rows / 2 - 1, 0] = _fields[(rows / 2) + 1, 0] = new Road();
+        }
     }
 
+    public Int32 maxCitizens()
+    {
+        Int32 sumCit = 0;
+
+        foreach (var field in _fields)
+            if (field.GetAreaType() == "Residential")
+                sumCit += (int) field.SizeOfZone;
+
+        return sumCit;
+    }
+    
     public Int32 getMaintenance()
     {
         Int32 sumMaintenance = 0;
