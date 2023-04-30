@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Media;
 
 namespace SimCity.Persistence;
 
@@ -49,5 +52,25 @@ public class Map
         Int32 prize = _fields[row, column].RemovePrice;
         _fields[row, column] = new AreaType();
         return prize;
+    }
+
+    /// <summary>
+    /// Get all zone with the given AreaType
+    /// </summary>
+    /// <param name="areaType">Type of the area to search for.</param>
+    /// <returns>A list containing x and y coordinates where the given Area occurs</returns>
+    public List<(Int32, Int32)> AvaibleZones(String areaType)
+    {
+        List<(Int32, Int32)> output = new List<(int, int)>();
+
+        var indexedFields = _fields.Cast<AreaType>()
+            .Select((value, index) => 
+                new { Index = (index / _fields.GetLength(0), index % _fields.GetLength(1)),
+                    Value = value });
+        foreach (var area in indexedFields)
+            if (area.Value.GetAreaType() == areaType)
+                    output.Add(area.Index);
+
+        return output;
     }
 }
