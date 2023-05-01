@@ -26,137 +26,180 @@
             <MenuItem Header="Normál" Command="{Binding SpeedCommand}" CommandParameter="1"/>
             <MenuItem Header="Gyors" Command="{Binding SpeedCommand}" CommandParameter="2"/>
             <MenuItem Header="Gyorsabb" Command="{Binding SpeedCommand}" CommandParameter="3"/>
-            <MenuItem Header="Építés">
-                <MenuItem Header="Zóna">
-                    <MenuItem Header="Lakó" Command="{Binding BuildCommand}" CommandParameter="Build Living"/>
-                    <MenuItem Header="Ipari" Command="{Binding BuildCommand}" CommandParameter="Build Industrial"/>
-                    <MenuItem Header="Kereskedelmi" Command="{Binding BuildCommand}" CommandParameter="Build Commercial"/>
-                </MenuItem>
-                <MenuItem Header="Szolgáltató">
-                    <MenuItem Header="Rendőrség" Command="{Binding BuildCommand}" CommandParameter="Build Police"/>
-                    <MenuItem Header="Stadion" Command="{Binding BuildCommand}" CommandParameter="Build Stadium"/>
-                    <MenuItem Header="Fa" Command="{Binding BuildCommand}" CommandParameter="Build Tree"/>
-                </MenuItem>
-                <MenuItem Header="Út" Command="{Binding BuildCommand}" CommandParameter="Build Road"/>
-            </MenuItem>
-            <MenuItem Header="Bontás" Command="{Binding BuildCommand}" CommandParameter="Remove"/>
             <MenuItem Header="Erdőtűz" Command="{Binding CatastopheCommand}"/>
             <MenuItem Header="Info" Command="{Binding InfoCommand}"/>
         </Menu>
-         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
-            <ItemsControl ItemsSource="{Binding Fields}">
-                <!--az mezőket tároló vezérlő-->
+        <DockPanel Grid.Row="1">
+            <ItemsControl ItemsSource="{Binding MenuItems}">
+
+                <ItemsControl.Resources>
+                    <Style TargetType="{x:Type Button}">
+                        <Setter Property="BorderBrush" Value="White"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Border Background="LightBlue">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ItemsControl.Resources>
+
                 <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate x:Name="GameField">
-                        <!--a gombokat egy rácsba fűzzük fel-->
-                        <UniformGrid Rows="50" Columns="50" />
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical" Width="100" Background="DarkBlue"/>
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
+
                 <ItemsControl.ItemTemplate>
-                    <!--az elemek gombok lesznek-->
                     <DataTemplate>
-                        <Button BorderThickness="0" Width="60" Height="60" Command="{Binding ClickCommand}" CommandParameter="{Binding Number}" Content="{Binding Text}" Focusable="False" RenderTransformOrigin="0.1, 0.1" FontSize="10" FontWeight="Bold">
-                            <Button.RenderTransform>
-                                <ScaleTransform ScaleX="1" ScaleY="1" />
-                            </Button.RenderTransform>
-                            <Button.Style>
-                                <Style TargetType="Button">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ZoneType}" Value="None">
-                                            <Setter Property="Background" >
-                                                <Setter.Value>
-                                                    <ImageBrush ImageSource="/SimCity;Component/Images/background.jpg" />
-                                                </Setter.Value>
-                                            </Setter>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding ZoneType}" Value="Residential">
-                                            <Setter Property="Background" >
-                                                <Setter.Value>
-                                                    <ImageBrush ImageSource="/SimCity;Component/Images/residential.jpg" />
-                                                </Setter.Value>
-                                            </Setter>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding ZoneType}" Value="Commercial">
-                                            <Setter Property="Background" >
-                                                <Setter.Value>
-                                                    <ImageBrush ImageSource="/SimCity;Component/Images/commercial.jpg" />
-                                                </Setter.Value>
-                                            </Setter>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding ZoneType}" Value="Industrial">
-                                            <Setter Property="Background" >
-                                                <Setter.Value>
-                                                    <ImageBrush ImageSource="/SimCity;Component/Images/industrial.jpg" />
-                                                </Setter.Value>
-                                            </Setter>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding ZoneType}" Value="Road">
-                                            <Setter Property="Background" >
-                                                <Setter.Value>
-                                                    <ImageBrush ImageSource="/SimCity;Component/Images/road.png" />
-                                                </Setter.Value>
-                                            </Setter>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding ZoneType}" Value="Police">
-                                            <Setter Property="Background" >
-                                                <Setter.Value>
-                                                    <ImageBrush ImageSource="/SimCity;Component/Images/police.jpg" />
-                                                </Setter.Value>
-                                            </Setter>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding ZoneType}" Value="Stadium">
-                                            <Setter Property="Background" >
-                                                <Setter.Value>
-                                                    <ImageBrush ImageSource="/SimCity;Component/Images/stadium.jpg" />
-                                                </Setter.Value>
-                                            </Setter>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding ZoneType}" Value="Tree">
-                                            <Setter Property="Background" >
-                                                <Setter.Value>
-                                                    <ImageBrush ImageSource="/SimCity;Component/Images/tree1.jpg" />
-                                                </Setter.Value>
-                                            </Setter>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                            <Button.Triggers>
-                                <!-- animációk végrehajtása esemény hatására -->
-                                <EventTrigger RoutedEvent="Button.Loaded">
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <DoubleAnimation Duration="0:00:02" From="0" To="1" Storyboard.TargetProperty="Opacity" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </EventTrigger>
-                                <EventTrigger RoutedEvent="Button.Click">
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <ColorAnimationUsingKeyFrames Duration="0:00:00.2" Storyboard.TargetProperty="(Foreground).(SolidColorBrush.Color)">
-                                                <ColorAnimationUsingKeyFrames.KeyFrames>
-                                                    <DiscreteColorKeyFrame Value="Blue" KeyTime="0:00:00" />
-                                                    <DiscreteColorKeyFrame Value="Black" KeyTime="0:00:00.2" />
-                                                </ColorAnimationUsingKeyFrames.KeyFrames>
-                                            </ColorAnimationUsingKeyFrames>
-                                            <DoubleAnimation Duration="0:00:00.1" From="1" To="0.5" AutoReverse="True" Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleX)" />
-                                            <DoubleAnimation Duration="0:00:00.1" From="1" To="0.5" AutoReverse="True" Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleY)" />
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </EventTrigger>
-                            </Button.Triggers>
+                        <Button BorderBrush="White" Background="LightBlue" Command="{Binding SelectCommand}" CommandParameter="{Binding CommandParameter}"  HorizontalAlignment="Center">
+                            <StackPanel>
+                                <Label DockPanel.Dock="Left" Foreground="Black" FontSize="15" Content="{Binding Name}"/>
+                                <Image Source="{Binding ImageSource}"/>
+                                <Label HorizontalAlignment="Center" DockPanel.Dock="Right" FontSize="16" Foreground="Green" Content="{Binding Price}"/>
+                                <Separator></Separator>
+                            </StackPanel>
                         </Button>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
-                <ItemsControl.ItemContainerStyle>
-                    <!--a függőségi tulajdonságokat kjülön kell kötnünk-->
-                    <Style>
-                        <Setter Property="Grid.Column" Value="{Binding Y}" />
-                        <Setter Property="Grid.Row" Value="{Binding X}" />
-                    </Style>
-                </ItemsControl.ItemContainerStyle>
+
+                <ItemsControl.Template>
+                    <ControlTemplate>
+                        <ScrollViewer Padding="0">
+                            <ItemsPresenter />
+                        </ScrollViewer>
+                    </ControlTemplate>
+                </ItemsControl.Template>
+
             </ItemsControl>
-        </ScrollViewer>
+
+            
+            
+            <ScrollViewer Grid.Row="1" Grid.Column="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
+                <ItemsControl ItemsSource="{Binding Fields}">
+                    <!--az mezőket tároló vezérlő-->
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate x:Name="GameField">
+                            <!--a gombokat egy rácsba fűzzük fel-->
+                            <UniformGrid Rows="50" Columns="50" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <!--az elemek gombok lesznek-->
+                        <DataTemplate>
+                            <Button BorderThickness="0" Width="60" Height="60" Command="{Binding ClickCommand}" CommandParameter="{Binding Number}" Content="{Binding Text}" Focusable="False" RenderTransformOrigin="0.1, 0.1" FontSize="10" FontWeight="Bold">
+                                <Button.RenderTransform>
+                                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                                </Button.RenderTransform>
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ZoneType}" Value="None">
+                                                <Setter Property="Background" >
+                                                    <Setter.Value>
+                                                        <ImageBrush ImageSource="/SimCity;Component/Images/background.jpg" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ZoneType}" Value="Residential">
+                                                <Setter Property="Background" >
+                                                    <Setter.Value>
+                                                        <ImageBrush ImageSource="/SimCity;Component/Images/residential.jpg" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ZoneType}" Value="Commercial">
+                                                <Setter Property="Background" >
+                                                    <Setter.Value>
+                                                        <ImageBrush ImageSource="/SimCity;Component/Images/commercial.jpg" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ZoneType}" Value="Industrial">
+                                                <Setter Property="Background" >
+                                                    <Setter.Value>
+                                                        <ImageBrush ImageSource="/SimCity;Component/Images/industrial.jpg" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ZoneType}" Value="Road">
+                                                <Setter Property="Background" >
+                                                    <Setter.Value>
+                                                        <ImageBrush ImageSource="/SimCity;Component/Images/road.png" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ZoneType}" Value="Police">
+                                                <Setter Property="Background" >
+                                                    <Setter.Value>
+                                                        <ImageBrush ImageSource="/SimCity;Component/Images/police.jpg" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ZoneType}" Value="Stadium">
+                                                <Setter Property="Background" >
+                                                    <Setter.Value>
+                                                        <ImageBrush ImageSource="/SimCity;Component/Images/stadium.jpg" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ZoneType}" Value="Tree">
+                                                <Setter Property="Background" >
+                                                    <Setter.Value>
+                                                        <ImageBrush ImageSource="/SimCity;Component/Images/tree1.jpg" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ZoneType}" Value="FireDepartment">
+                                                <Setter Property="Background" >
+                                                    <Setter.Value>
+                                                        <ImageBrush ImageSource="/SimCity;Component/Images/fireDepartment.jpg" />
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <Button.Triggers>
+                                    <!-- animációk végrehajtása esemény hatására -->
+                                    <EventTrigger RoutedEvent="Button.Loaded">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Duration="0:00:02" From="0" To="1" Storyboard.TargetProperty="Opacity" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                    <EventTrigger RoutedEvent="Button.Click">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimationUsingKeyFrames Duration="0:00:00.2" Storyboard.TargetProperty="(Foreground).(SolidColorBrush.Color)">
+                                                    <ColorAnimationUsingKeyFrames.KeyFrames>
+                                                        <DiscreteColorKeyFrame Value="Blue" KeyTime="0:00:00" />
+                                                        <DiscreteColorKeyFrame Value="Black" KeyTime="0:00:00.2" />
+                                                    </ColorAnimationUsingKeyFrames.KeyFrames>
+                                                </ColorAnimationUsingKeyFrames>
+                                                <DoubleAnimation Duration="0:00:00.1" From="1" To="0.5" AutoReverse="True" Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleX)" />
+                                                <DoubleAnimation Duration="0:00:00.1" From="1" To="0.5" AutoReverse="True" Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleY)" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Button.Triggers>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemContainerStyle>
+                        <!--a függőségi tulajdonságokat kjülön kell kötnünk-->
+                        <Style>
+                            <Setter Property="Grid.Column" Value="{Binding Y}" />
+                            <Setter Property="Grid.Row" Value="{Binding X}" />
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                </ItemsControl>
+            </ScrollViewer>
+        </DockPanel>
         <StatusBar Grid.Row="2">
             <StatusBarItem>
                 <TextBlock Text="Pénz: "/>
