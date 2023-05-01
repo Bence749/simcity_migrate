@@ -9,6 +9,8 @@ using System.Net.Http.Headers;
 using SimCity.Persistence;
 using System.Runtime.ExceptionServices;
 using System.Windows;
+using System.Reflection;
+using System.IO;
 
 namespace SimCity.ViewModel
 {
@@ -23,10 +25,6 @@ namespace SimCity.ViewModel
         private String _currentBuildAction = String.Empty;
         public string? cityName; //add button and shit
 
-
-        #endregion
-
-        #region Properties
 
         public Int32 TimeElapsed
         {
