@@ -11,7 +11,7 @@ using SimCity.Persistence;
 /// <param name="Stop">The game will not advance</param>
 /// <param name="Normal">1 real life second = 1 hours in-game</param>
 /// <param name="Fast">1 real life second = 2 hours in-game</param>
-/// <param name="FastProMax">1 real life second = 4 hours in-game</param>
+/// <param name="Faster">1 real life second = 4 hours in-game</param>
 /// </summary>
 public enum PlaySpeed { Stop, Normal, Fast, Faster }
 
@@ -27,7 +27,7 @@ namespace SimCity.Model
 
         public PlaySpeed GamePace { get; set; }
 
-        public Map Field { get { return _field; } }
+        public Map Field => _field;
 
         public event EventHandler<SimCityArgsTime>? GameAdvanced;
         public event EventHandler<SimCityArgsClick>? GameBuild;
@@ -53,8 +53,11 @@ namespace SimCity.Model
                                                 (GamePace == PlaySpeed.Normal && _tickCount % 4 == 0)))
             {
                 ++_timeElapsed;
-                _citizens += 10;
                 _money -= _field.getMaintenance();
+                
+                //Residential area ticks
+                if (_citizens < _field.maxCitizens())
+                    _citizens += 1;
             }
 
             this.GameAdvanced?.Invoke(this, new SimCityArgsTime(_timeElapsed, _citizens, _money));

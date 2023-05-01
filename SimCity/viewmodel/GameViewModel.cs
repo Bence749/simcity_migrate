@@ -20,12 +20,43 @@ namespace SimCity.ViewModel
 
         private readonly GameModel _model;
         private Int32 _timeElapsed = 0;
+        private Int32 _years = 0;
+        private Int32 _months = 0;
         private Int32 _moneySum = 0;
         private Int32 _populationSum = 0;
         private String _currentBuildAction = String.Empty;
         public string? cityName; //add button and shit
 
 
+<<<<<<< SimCity/viewmodel/GameViewModel.cs
+=======
+        #endregion
+
+        #region Properties
+
+        public Int32 Months
+        {
+            get => _months;
+            set
+            {
+                if (_months == value) return;
+                _months = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Int32 Years
+        {
+            get => _years;
+            set
+            {
+                if (_years == value) return;
+                _years = value;
+                OnPropertyChanged();
+            }
+        }
+
+>>>>>>> SimCity/viewmodel/GameViewModel.cs
         public Int32 TimeElapsed
         {
             get => _timeElapsed;
@@ -93,12 +124,11 @@ namespace SimCity.ViewModel
         public DelegateCommand SpeedCommand { get; private set; }
         public DelegateCommand BuildCommand { get; private set; }
         public DelegateCommand NewGameSmallCommand { get; private set; }
-
+        public DelegateCommand CatastopheCommand { get; private set; }
 
         public DelegateCommand InfoCommand { get; private set; }
 
         public DelegateCommand ExitCommand { get; private set; }
-
 
         public ObservableCollection<SimCityField> Fields { get; set; }
 
@@ -132,6 +162,8 @@ namespace SimCity.ViewModel
 
             InfoCommand = new DelegateCommand(param => InfoPanel());
 
+            CatastopheCommand = new DelegateCommand(param => ForestFire());
+
             ExitCommand = new DelegateCommand(param => OnExitGame());
 
 
@@ -156,11 +188,28 @@ namespace SimCity.ViewModel
         {
             //string tmpSpeed = SpeedOfGame;
             SpeedOfGame = Convert.ToString(0);
-            MessageBox.Show("Dikh, itt egy lorem ipsum \n\nSimCity, a városépítő játék\n\n\nPénz: Ebből tudod finanszírozni nagyszerű városod fejlesztését.\n\nElégedettség: Megmutatja mennyire elégíted ki a lakosaid igényeit. Meghatározza a betelepülés sebességét. Ha túl alacsonra esne, elveszíted a játékot.\n\nLakosság: A városodban élő polgárok. Adót fizetnek, évente. Maguktól jönnek a városba és keresnek munkát, amennyiben van szabad munka- és lakóhely számukra.\n\nIdő: Az eltelt évek száma.\n\nSebesség: a szimuláció sebessége.\nStop: a játék áll. \nNormal: 1 másodperc = 1 év. \nFast: 1 másodperc = 2 év. \nFaster: 1 másodperc = 4 év", "SzimSziti", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("SimCity, a városépítő játék\n\n\nPénz: Ebből tudod finanszírozni nagyszerű városod fejlesztését.\n\nElégedettség: Megmutatja mennyire elégíted ki a lakosaid igényeit. Meghatározza a betelepülés sebességét. Ha túl alacsonra esne, elveszíted a játékot.\n\nLakosság: A városodban élő polgárok. Adót fizetnek, évente. Maguktól jönnek a városba és keresnek munkát, amennyiben van szabad munka- és lakóhely számukra.\n\nIdő: Az eltelt évek száma.\n\nSebesség: a szimuláció sebessége.\nStop: a játék áll. \nNormal: 1 másodperc = 1 hónap. \nFast: 1 másodperc = 2 hónap. \nFaster: 1 másodperc = 4 hónap", "SimCity", MessageBoxButton.OK, MessageBoxImage.Information);
             //SpeedOfGame = tmpSpeed;
             SpeedOfGame = Convert.ToString(1);
         }
 
+        //a tűzvész 20% eséllyel Lebontja az egyes erdőket
+        private void ForestFire()
+        {
+            Random rnd = new Random();
+            foreach (SimCityField field in Fields)
+            {
+                if(field.ZoneType == "Tree") 
+                {
+                    if(rnd.Next(1,5) == 1)
+                    {
+                       _model.ClickHandle(field.X, field.Y, "Remove"); //remove 'building' on field
+                    }
+                }
+            }
+
+            RefreshTable();
+        }
         private void GenerateTable()
         {
             Fields.Clear();
@@ -182,6 +231,12 @@ namespace SimCity.ViewModel
             }
         }
 
+        private void ConvertTime()
+        {
+            Months = TimeElapsed;
+            Years = Months / 12;
+            Months = Months % 12;
+        }
         private void ClickField(Int32 index)
         {
             if (CurrentBuildAction != "")
@@ -240,6 +295,7 @@ namespace SimCity.ViewModel
             TimeElapsed = e.TimeElapsed;
             PopulationSum = e.Citizens;
             MoneySum = e.Money;
+            ConvertTime();
         }
         
         private void Model_Build(object? sender, SimCityArgsClick e)
