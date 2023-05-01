@@ -295,7 +295,16 @@ namespace SimCity.ViewModel
         
         private void Model_Build(object? sender, SimCityArgsClick e)
         {
-            MoneySum = e.Money;
+            if (e.Money is not null)
+            {
+                MoneySum = (Int32)e.Money;
+                
+                //TODO: Sound in case of good action
+            }
+            else
+            {
+                //TODO: Sound in case of bad action
+            }
             
             RefreshTable();
         }
