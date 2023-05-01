@@ -9,6 +9,8 @@ using System.Net.Http.Headers;
 using SimCity.Persistence;
 using System.Runtime.ExceptionServices;
 using System.Windows;
+using System.Reflection;
+using System.IO;
 
 namespace SimCity.ViewModel
 {
@@ -26,6 +28,8 @@ namespace SimCity.ViewModel
         public string? cityName; //add button and shit
 
 
+<<<<<<< SimCity/viewmodel/GameViewModel.cs
+=======
         #endregion
 
         #region Properties
@@ -52,6 +56,7 @@ namespace SimCity.ViewModel
             }
         }
 
+>>>>>>> SimCity/viewmodel/GameViewModel.cs
         public Int32 TimeElapsed
         {
             get => _timeElapsed;

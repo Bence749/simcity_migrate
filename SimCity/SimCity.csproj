@@ -8,6 +8,52 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <None Remove="Images\background.jpg" />
+      <None Remove="Images\commercial.jpg" />
+      <None Remove="Images\commercial.png" />
+      <None Remove="Images\industrial.jpg" />
+      <None Remove="Images\industrial.png" />
+      <None Remove="Images\police.jpg" />
+      <None Remove="Images\police.png" />
+      <None Remove="Images\residential.jpg" />
+      <None Remove="Images\residential.png" />
+      <None Remove="Images\road.png" />
+      <None Remove="Images\stadium.jpg" />
+      <None Remove="Images\stadium.png" />
+      <None Remove="Images\tree.png" />
+      <None Remove="Images\tree1.jpg" />
+      <None Remove="Images\tree10.jpg" />
+      <None Remove="Images\tree2.jpg" />
+      <None Remove="Images\tree3.jpg" />
+      <None Remove="Images\tree4.jpg" />
+      <None Remove="Images\tree5.jpg" />
+      <None Remove="Images\tree6.jpg" />
+      <None Remove="Images\tree7.jpg" />
+      <None Remove="Images\tree8.jpg" />
+      <None Remove="Images\tree9.jpg" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Resource Include="Images\background.jpg" />
+      <Resource Include="Images\commercial.jpg" />
+      <Resource Include="Images\industrial.jpg" />
+      <Resource Include="Images\police.jpg" />
+      <Resource Include="Images\residential.jpg" />
+      <Resource Include="Images\road.png" />
+      <Resource Include="Images\stadium.jpg" />
+      <Resource Include="Images\tree1.jpg" />
+      <Resource Include="Images\tree10.jpg" />
+      <Resource Include="Images\tree2.jpg" />
+      <Resource Include="Images\tree3.jpg" />
+      <Resource Include="Images\tree4.jpg" />
+      <Resource Include="Images\tree5.jpg" />
+      <Resource Include="Images\tree6.jpg" />
+      <Resource Include="Images\tree7.jpg" />
+      <Resource Include="Images\tree8.jpg" />
+      <Resource Include="Images\tree9.jpg" />
+    </ItemGroup>
+
+    <ItemGroup>
       <Page Update="View\MainWindow.xaml">
         <Generator>MSBuild:Compile</Generator>
         <XamlRuntime>Wpf</XamlRuntime>
