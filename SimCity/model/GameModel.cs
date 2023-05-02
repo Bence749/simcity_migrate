@@ -26,7 +26,9 @@ namespace SimCity.Model
         private Int32 _citizens;
 
         public PlaySpeed GamePace { get; set; }
-
+        public Int32 CommercialTax { get; set; }
+        public Int32 IndustrialTax { get; set; }
+        
         public Map Field => _field;
 
         public event EventHandler<SimCityArgsTime>? GameAdvanced;
@@ -38,6 +40,8 @@ namespace SimCity.Model
             _money = 100000;
             _citizens = 0;
             GamePace = PlaySpeed.Normal;
+            CommercialTax = 10;
+            IndustrialTax = 10;
         }
 
         public void CreateGame(Int32 rows, Int32 columns)
@@ -62,18 +66,31 @@ namespace SimCity.Model
                         _field[y.Item2.Item1, y.Item2.Item2].Residents.Count
                         < (Int32) _field[y.Item2.Item1, y.Item2.Item2].SizeOfZone)
                         .SelectMany(y => Enumerable.Repeat(y.Item2, y.Item1.Happiness + 1)).ToList();
+                    var residentialZones = _field.AvailableZones("Residential").Where(y =>
+                        _field[y.Item2.Item1, y.Item2.Item2].NumberOfResidents
+                        < (Int32)_field[y.Item2.Item1, y.Item2.Item2].SizeOfZone).ToList();
 
                     if (residentialZones.Count != 0)
                     {
+                        Int32 minHappiness = residentialZones.Min(y => y.Item1.Happiness) + 1;
+                        List<(Int32, Int32)> happinessBasedFieldCounts = residentialZones
+                            .Select(y => (y.Item1.Happiness + minHappiness, y.Item2))
+                            .SelectMany(y => Enumerable.Repeat(y.Item2, y.Item1)).ToList();
+
                         Random randSelector = new Random();
                         (Int32, Int32) selectedField =
+                            happinessBasedFieldCounts.ElementAt(randSelector.Next(happinessBasedFieldCounts.Count));
+                        _field[selectedField.Item1, selectedField.Item2].NumberOfResidents += 1;
                             residentialZones.ElementAt(randSelector.Next(residentialZones.Count));
                         _field[selectedField.Item1, selectedField.Item2].Residents.Add(new Citizen());
                     }
                 }
+
+                Task.Run(() => _money += Field.TickZones(CommercialTax, IndustrialTax).Result);
+
+                this.GameAdvanced?.Invoke(this, new SimCityArgsTime(_timeElapsed, _field.NumberOfCitizens, _money));
             }
 
-            this.GameAdvanced?.Invoke(this, new SimCityArgsTime(_timeElapsed, _field.NumberOfCitizens, _money));
         }
         
         /// <summary>
