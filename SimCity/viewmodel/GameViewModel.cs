@@ -92,6 +92,7 @@ namespace SimCity.ViewModel
             {
                 if (_currentBuildAction == value) return;
                 _currentBuildAction = value;
+                OnPropertyChanged();
             }
         }
 
@@ -155,8 +156,6 @@ namespace SimCity.ViewModel
             SpeedCommand = new DelegateCommand(param => OnSpeedChange(param));
             NewGameSmallCommand = new DelegateCommand(param => OnNewGameSmall());
 
-            BuildCommand = new DelegateCommand(param => OnBuild(Convert.ToString(param)));
-
             InfoCommand = new DelegateCommand(param => InfoPanel());
 
             CatastopheCommand = new DelegateCommand(param => ForestFire());
@@ -173,7 +172,6 @@ namespace SimCity.ViewModel
             MenuItems.Add(new MenuField { Name = "Stadium", Price = 1000, ImageSource = "/SimCity;Component/Images/stadium.jpg", SelectCommand = new DelegateCommand(param => OnBuild(Convert.ToString(param))), CommandParameter = "Build Stadium" });
             MenuItems.Add(new MenuField { Name = "Tree", Price = 50, ImageSource = "/SimCity;Component/Images/tree10.jpg", SelectCommand = new DelegateCommand(param => OnBuild(Convert.ToString(param))), CommandParameter = "Build Tree" });
             MenuItems.Add(new MenuField { Name = "Fire Dept.", Price = 500, ImageSource = "/SimCity;Component/Images/fireDepartment.jpg", SelectCommand = new DelegateCommand(param => OnBuild(Convert.ToString(param))), CommandParameter = "Build FireDepartment" });
-
 
 
         }
@@ -297,8 +295,6 @@ namespace SimCity.ViewModel
                             _model.ClickHandle(field.X, field.Y, "Build", new FireDepartment());
                             break;
                     }
-
-                CurrentBuildAction = "";
                 
                 RefreshTable();
             }

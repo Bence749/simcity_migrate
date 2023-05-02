@@ -126,4 +126,3 @@ public class Tree : AreaType
     
     public override String GetAreaType() => "Tree";
 }
-
