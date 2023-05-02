@@ -108,3 +108,10 @@ public class Tree : AreaType
     
     public override String GetAreaType() => "Tree";
 }
+
+public class FireDepartment : AreaType
+{
+    public FireDepartment() : base(200, 500, 100) { }
+
+    public override String GetAreaType() => "FireDepartment";
+}

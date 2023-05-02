@@ -127,6 +127,8 @@ namespace SimCity.ViewModel
 
         public ObservableCollection<SimCityField> Fields { get; set; }
 
+        public ObservableCollection<MenuField> MenuItems { get; set; }
+
         #endregion
 
         #region Events
@@ -161,10 +163,18 @@ namespace SimCity.ViewModel
 
             ExitCommand = new DelegateCommand(param => OnExitGame());
 
+            MenuItems = new ObservableCollection<MenuField>();
+            MenuItems.Add(new MenuField { Name = "Remove", Price = null, ImageSource = "/SimCity;Component/Images/remove.png", SelectCommand = new DelegateCommand(param => OnBuild(Convert.ToString(param))), CommandParameter = "Remove" });
+            MenuItems.Add(new MenuField { Name = "Road", Price = 100, ImageSource = "/SimCity;Component/Images/road.png", SelectCommand = new DelegateCommand(param => OnBuild(Convert.ToString(param))), CommandParameter = "Build Road" });
+            MenuItems.Add(new MenuField { Name = "Living", Price = 0, ImageSource = "/SimCity;Component/Images/residential.jpg", SelectCommand = new DelegateCommand(param => OnBuild(Convert.ToString(param))), CommandParameter = "Build Living" });
+            MenuItems.Add(new MenuField { Name = "Industrial", Price = 0, ImageSource = "/SimCity;Component/Images/industrial.jpg", SelectCommand = new DelegateCommand(param => OnBuild(Convert.ToString(param))), CommandParameter = "Build Industrial" });
+            MenuItems.Add(new MenuField { Name = "Commercial", Price = 0, ImageSource = "/SimCity;Component/Images/commercial.jpg", SelectCommand = new DelegateCommand(param => OnBuild(Convert.ToString(param))), CommandParameter = "Build Commercial" });
+            MenuItems.Add(new MenuField { Name = "Police", Price = 500, ImageSource = "/SimCity;Component/Images/police.jpg", SelectCommand = new DelegateCommand(param => OnBuild(Convert.ToString(param))), CommandParameter = "Build Police" });
+            MenuItems.Add(new MenuField { Name = "Stadium", Price = 1000, ImageSource = "/SimCity;Component/Images/stadium.jpg", SelectCommand = new DelegateCommand(param => OnBuild(Convert.ToString(param))), CommandParameter = "Build Stadium" });
+            MenuItems.Add(new MenuField { Name = "Tree", Price = 50, ImageSource = "/SimCity;Component/Images/tree10.jpg", SelectCommand = new DelegateCommand(param => OnBuild(Convert.ToString(param))), CommandParameter = "Build Tree" });
+            MenuItems.Add(new MenuField { Name = "Fire Dept.", Price = 500, ImageSource = "/SimCity;Component/Images/fireDepartment.jpg", SelectCommand = new DelegateCommand(param => OnBuild(Convert.ToString(param))), CommandParameter = "Build FireDepartment" });
 
 
-            // játéktábla létrehozása
-            
 
         }
         #endregion
@@ -264,6 +274,9 @@ namespace SimCity.ViewModel
                             break;
                         case "Tree":
                             _model.ClickHandle(field.X, field.Y, "Build", new Tree());
+                            break;
+                        case "FireDepartment":
+                            _model.ClickHandle(field.X, field.Y, "Build", new FireDepartment());
                             break;
                     }
 
