@@ -29,20 +29,20 @@ public class AreaType
         /// Cost to build the zone
         /// </summary>
         public Int32 BuildCost { get; }
-        /// <summary>
-        /// Amount of money the city will get if the user demolish a zone
-        /// </summary>
-        public Int32 RemovePrice { get; }
-        public SizeType SizeOfZone { get; set; } = SizeType.Small;
-        public Int32 NumberOfResidents { get; set; } = 0;
+    /// <summary>
+    /// Amount of money the city will get if the user demolish a zone
+    /// </summary>
+    public Int32 RemovePrice { get; }
+    public SizeType SizeOfZone { get; set; } = SizeType.Small;
+    public Int32 NumberOfResidents { get; set; } = 0;
 
-        /// <summary>
-        /// Initialize variables.
-        /// </summary>
-        /// <param name="maintenanceCost">Cost to maintain zone per tick</param>
-        /// <param name="buildCost">Cost to build the zone</param>
-        /// <param name="removePrice">Money you will get if you remove the zone</param>
-        public AreaType(Int32 maintenanceCost = 0, Int32 buildCost = 0, Int32 removePrice = 0)
+    /// <summary>
+    /// Initialize variables.
+    /// </summary>
+    /// <param name="maintenanceCost">Cost to maintain zone per tick</param>
+    /// <param name="buildCost">Cost to build the zone</param>
+    /// <param name="removePrice">Money you will get if you remove the zone</param>
+    public AreaType(Int32 maintenanceCost = 0, Int32 buildCost = 0, Int32 removePrice = 0)
         {
             this.MaintenanceCost = maintenanceCost;
             this.BuildCost = buildCost;

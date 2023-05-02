@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:SimCity"
+        xmlns:local="clr-namespace:SimCity" xmlns:localviewmodel="clr-namespace:SimCity.ViewModel"
         mc:Ignorable="d"
         Title="MainWindow" Height="650" Width="1000">
     <Grid>
@@ -44,6 +44,49 @@
                                 </ControlTemplate>
                             </Setter.Value>
                         </Setter>
+                        <Style.Triggers>
+                            <DataTrigger Value="True">
+                                <DataTrigger.Binding>
+                                    <MultiBinding>
+                                        <MultiBinding.Converter>
+                                            <localviewmodel:EqualityConverter />
+                                        </MultiBinding.Converter>
+                                        <Binding Path="DataContext.CurrentBuildAction" RelativeSource="{RelativeSource AncestorType=ItemsControl}" />
+                                        <Binding Path="CommandParameter" />
+                                    </MultiBinding>
+                                </DataTrigger.Binding>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Border Background="Gold">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            <DataTrigger Value="False">
+                                <DataTrigger.Binding>
+                                    <MultiBinding>
+                                        <MultiBinding.Converter>
+                                            <localviewmodel:EqualityConverter />
+                                        </MultiBinding.Converter>
+                                        <Binding Path="DataContext.CurrentBuildAction" RelativeSource="{RelativeSource AncestorType=ItemsControl}" />
+                                        <Binding Path="CommandParameter" />
+                                    </MultiBinding>
+                                </DataTrigger.Binding>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Border Background="LightBlue">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            
+                        </Style.Triggers>
                     </Style>
                 </ItemsControl.Resources>
 
@@ -55,7 +98,7 @@
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Button BorderBrush="White" Background="LightBlue" Command="{Binding SelectCommand}" CommandParameter="{Binding CommandParameter}"  HorizontalAlignment="Center">
+                        <Button BorderBrush="White" Command="{Binding SelectCommand}" CommandParameter="{Binding CommandParameter}"  HorizontalAlignment="Center">
                             <StackPanel>
                                 <Label DockPanel.Dock="Left" Foreground="Black" FontSize="15" Content="{Binding Name}"/>
                                 <Image Source="{Binding ImageSource}"/>

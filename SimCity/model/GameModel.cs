@@ -56,7 +56,7 @@ namespace SimCity.Model
                 _money -= _field.GetMaintenance();
                 
                 //Residential area ticks
-                if (_citizens < _field.MaxCitizens())
+                if (_citizens < _field.MaxCitizens)
                     _citizens += 1;
             }
 
