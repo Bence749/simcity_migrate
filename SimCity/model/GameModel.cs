@@ -59,11 +59,18 @@ namespace SimCity.Model
                 if (_field.NumberOfCitizens < _field.MaxCitizens)
                 {
                     //TODO: Residents more likely to fill happier zones
-                    (Int32, Int32) residentialZone = _field.AvailableZones("Residential").Where(y => 
-                        _field[y.Item1, y.Item2].NumberOfResidents < (Int32) _field[y.Item1, y.Item2].SizeOfZone)
-                        .OrderBy(y => Guid.NewGuid()).DefaultIfEmpty((-1, -1)).First();
-                    if(residentialZone != (-1, -1))
-                        _field[residentialZone.Item1, residentialZone.Item2].NumberOfResidents += 1;
+                    List<(Int32, Int32)> residentialZones = _field.AvailableZones("Residential").Where(y => 
+                        _field[y.Item2.Item1, y.Item2.Item2].NumberOfResidents
+                        < (Int32) _field[y.Item2.Item1, y.Item2.Item2].SizeOfZone)
+                        .SelectMany(y => Enumerable.Repeat(y.Item2, y.Item1.Happiness)).ToList();
+
+                    if (residentialZones.Count != 0)
+                    {
+                        Random randSelector = new Random();
+                        (Int32, Int32) selectedField =
+                            residentialZones.ElementAt(randSelector.Next(residentialZones.Count));
+                        _field[selectedField.Item1, selectedField.Item2].NumberOfResidents += 1;
+                    }
                 }
             }
 
