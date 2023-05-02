@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace SimCity.Persistence;
 
@@ -110,14 +111,13 @@ public class Map
     /// </summary>
     /// <param name="areaType">Type of the area to search for.</param>
     /// <returns>A list containing x and y coordinates where the given Area occurs</returns>
-    public List<(Int32, Int32)> AvailableZones(String areaType)
+    public List<(AreaType, (Int32, Int32))> AvailableZones(String areaType)
     {
-        List<(Int32, Int32)> output = _fields.Cast<AreaType>()
+        List<(AreaType, (Int32, Int32))> output = _fields.Cast<AreaType>()
             .Select((value, index) => 
-                new { Index = (index / _fields.GetLength(0), index % _fields.GetLength(1)),
-                    Value = value })
-            .Where(y => y.Value.GetAreaType() == areaType)
-            .Select(y => y.Index).ToList();
+                new { Value = value, 
+                    Index = (index / _fields.GetLength(0), index % _fields.GetLength(1))})
+            .Where(y => y.Value.GetAreaType() == areaType).Select(y => (y.Value, y.Index)).ToList();
         
         return output;
     }
