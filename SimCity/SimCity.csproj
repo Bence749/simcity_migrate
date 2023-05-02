@@ -11,10 +11,12 @@
       <None Remove="Images\background.jpg" />
       <None Remove="Images\commercial.jpg" />
       <None Remove="Images\commercial.png" />
+      <None Remove="Images\fireDepartment.jpg" />
       <None Remove="Images\industrial.jpg" />
       <None Remove="Images\industrial.png" />
       <None Remove="Images\police.jpg" />
       <None Remove="Images\police.png" />
+      <None Remove="Images\remove.png" />
       <None Remove="Images\residential.jpg" />
       <None Remove="Images\residential.png" />
       <None Remove="Images\road.png" />
@@ -36,8 +38,10 @@
     <ItemGroup>
       <Resource Include="Images\background.jpg" />
       <Resource Include="Images\commercial.jpg" />
+      <Resource Include="Images\fireDepartment.jpg" />
       <Resource Include="Images\industrial.jpg" />
       <Resource Include="Images\police.jpg" />
+      <Resource Include="Images\remove.png" />
       <Resource Include="Images\residential.jpg" />
       <Resource Include="Images\road.png" />
       <Resource Include="Images\stadium.jpg" />
