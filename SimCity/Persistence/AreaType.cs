@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.DirectoryServices.ActiveDirectory;
 using System.Transactions;
 using System.Windows.Controls.Ribbon.Primitives;
@@ -22,7 +23,8 @@ public enum SizeType
 /// Parent AreaType that defines the basic params and function of children.
 /// </summary>
 public class AreaType
-    {
+{
+        public Int32 AreaID { get; set; } = 0;
         /// <summary>
         /// Each tick this amount will get deducted from the money.
         /// </summary>
@@ -36,7 +38,8 @@ public class AreaType
         /// </summary>
         public Int32 RemovePrice { get; }
         public SizeType SizeOfZone { get; set; } = SizeType.Small;
-        public Int32 NumberOfResidents { get; set; } = 0;
+        public Int32 NumberOfWorkers { get; set; } = 0;
+        public List<Citizen> Residents { get; set; } = new List<Citizen>();
         public Int32 Happiness { get; set; } = 0;
         public Int32 AreaSize { get; protected set; }
         public Int32 HappinessInc { get; protected set; }
@@ -49,6 +52,7 @@ public class AreaType
         /// <param name="buildCost">Cost to build the zone</param>
         /// <param name="removePrice">Money you will get if you remove the zone</param>
         /// <param name="areaSize">Describes the size of area where it increases happiness</param>
+        /// <param name="happinessInc">Defines the happiness increase/decrease in an area</param>
         /// <param name="isSpecial">Specifies whether the field is special</param>
         public AreaType(Int32 maintenanceCost = 0, Int32 buildCost = 0, Int32 removePrice = 0,
             Int32 areaSize = 0, Int32 happinessInc = 0, Boolean isSpecial = false)

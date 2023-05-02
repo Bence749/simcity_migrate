@@ -19,7 +19,7 @@ public class Map
     public Int32 RowSize => _fields.GetLength(0);
     public Int32 ColumnSize => _fields.GetLength(1);
     
-    public Int32 NumberOfCitizens => _fields.Cast<AreaType>().Select(y => y.NumberOfResidents).Sum();
+    public Int32 NumberOfCitizens => _fields.Cast<AreaType>().Select(y => y.Residents.Count).Sum();
 
     public Int32 MaxCitizens => _fields.Cast<AreaType>().Select(y => (Int32) y.SizeOfZone).Sum();
 
@@ -76,6 +76,9 @@ public class Map
             foreach (var fields in neighbourFields.Select(y => y.Item2))
                 _fields[fields.Item1, fields.Item2].Happiness += toBuild.HappinessInc;
         }
+
+        toBuild.AreaID = Enumerable.Range(1, Int32.MaxValue)
+            .First(y => !_fields.Cast<AreaType>().Select(y => y.AreaID).Contains(y));
         _fields[row, column] = toBuild;
         return toBuild.BuildCost;
     }
