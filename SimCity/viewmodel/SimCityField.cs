@@ -11,10 +11,16 @@ namespace SimCity.ViewModel
     {
         private String _zoneType;
         private string _text = String.Empty;
+        private int _numberOfResidents;
+        private int _maintanenceCost;
+        private int _removePrice;
+        private int _capacity; //based on model.SizeType
+        private int _happiness;
+        
+        //TODO
+        private int _taxRate;
 
-        /// <summary>
-        /// 
-        /// </summary>
+
         public String ZoneType
         {
             get { return _zoneType; }
@@ -35,6 +41,78 @@ namespace SimCity.ViewModel
                 if (_text != value)
                 {
                     _text = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+       /* public Int32 TaxRate
+        {
+            get { return _taxRate; }
+            set
+            {
+                if (_taxRate != value)
+                {
+                    _taxRate = value;
+                    OnPropertyChanged();
+                }
+            }
+        }*/
+        public Int32 Happiness
+        {
+            get { return _happiness; }
+            set
+            {
+                if (_happiness != value)
+                {
+                    _happiness = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public Int32 Capacity
+        {
+            get { return _capacity; }
+            set
+            {
+                if (_capacity != value)
+                {
+                    _capacity = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public Int32 RemovePrice
+        {
+            get { return _removePrice; }
+            set
+            {
+                if (_removePrice != value)
+                {
+                    _removePrice = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public Int32 MaintanenceCost
+        {
+            get { return _maintanenceCost; }
+            set
+            {
+                if (_maintanenceCost != value)
+                {
+                    _maintanenceCost = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public Int32 NumberOfResidents
+        {
+            get { return _numberOfResidents; }
+            set
+            {
+                if (_numberOfResidents != value)
+                {
+                    _numberOfResidents = value;
                     OnPropertyChanged();
                 }
             }
