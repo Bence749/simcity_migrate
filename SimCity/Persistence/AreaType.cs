@@ -9,7 +9,7 @@ namespace SimCity.Persistence;
 public enum SizeType
 {
     /// <summary> Small size = 10 residents/employees </summary>
-    Small = 10,
+    Small = 15,
     /// <summary> Small size = 25 residents/employees </summary>
     Medium = 25,
     /// <summary> Small size = 50 residents/employees </summary>
@@ -33,8 +33,8 @@ public class AreaType
         /// Amount of money the city will get if the user demolish a zone
         /// </summary>
         public Int32 RemovePrice { get; }
-        public SizeType SizeOfZone { get; } = SizeType.Small;
-        public Int32 NumberOfResidents { get; } = 0;
+        public SizeType SizeOfZone { get; set; } = SizeType.Small;
+        public Int32 NumberOfResidents { get; set; } = 0;
 
         /// <summary>
         /// Initialize variables.
