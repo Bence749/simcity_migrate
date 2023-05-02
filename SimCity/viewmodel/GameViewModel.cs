@@ -181,8 +181,19 @@ namespace SimCity.ViewModel
 
         private void RefreshTable()
         {
-            foreach (SimCityField field in Fields) // inicializálni kell a mezőket is
+            foreach (SimCityField field in Fields)
+            {
                 field.ZoneType = _model.Field[field.X, field.Y].GetAreaType();
+                field.NumberOfResidents = _model.Field[field.X, field.Y].NumberOfResidents;
+                if(field.NumberOfResidents > 0)
+                {
+                    field.Happiness = _model.Field[field.X, field.Y].Happiness;
+                    if (_model.Field[field.X, field.Y].SizeOfZone == SizeType.Medium)
+                        field.Capacity = 25;
+                    else if(_model.Field[field.X, field.Y].SizeOfZone == SizeType.Big)
+                        field.Capacity = 50;
+                }
+            }
             
         }
 
@@ -227,9 +238,16 @@ namespace SimCity.ViewModel
                         Y = j,
                         Number = i * _model.Field.RowSize + j, // a gomb sorszáma, amelyet felhasználunk az azonosításhoz
                         Text = String.Empty,
-                        ZoneType= new AreaType().GetAreaType(),
+                        ZoneType = new AreaType().GetAreaType(),
                         ClickCommand = new DelegateCommand(param => ClickField(Convert.ToInt32(param))),
-                    });
+                        NumberOfResidents = new AreaType().NumberOfResidents,
+                        MaintanenceCost = new AreaType().MaintenanceCost,
+                        //TaxRate = 
+                        Happiness = new AreaType().Happiness,
+                        Capacity = 15, //starts at 15, aka SMALL
+                        RemovePrice = new AreaType().RemovePrice,
+                        
+                    }) ;
                 }
             }
         }
@@ -280,6 +298,20 @@ namespace SimCity.ViewModel
                 
                 RefreshTable();
             }
+            else if (Fields[index].ZoneType == "Residential" || Fields[index].ZoneType == "Commercial" || Fields[index].ZoneType == "Industrial")
+            {
+                SimCityField field = Fields[index];
+                SpeedOfGame = Convert.ToString(0);
+                MessageBox.Show(field.ZoneType + " Zone" + 
+                    Environment.NewLine + "Lakosok: " + field.NumberOfResidents + 
+                    Environment.NewLine + "Kapacitás: " + field.Capacity +
+                    Environment.NewLine + "Elégedettség: " + field.Happiness +
+                    Environment.NewLine + "Fentartási költség: " + field.MaintanenceCost +
+                    Environment.NewLine + "Bontási kompenzáció: " + field.RemovePrice +
+                    Environment.NewLine + "Adó: " + "TO BE IMPLEMENTED"
+                    , "SimCity", MessageBoxButton.OK, MessageBoxImage.Information);
+                SpeedOfGame = Convert.ToString(1);
+            }
         }
 
         #endregion
@@ -300,6 +332,7 @@ namespace SimCity.ViewModel
             PopulationSum = e.Citizens;
             MoneySum = e.Money;
             ConvertTime();
+            RefreshTable();
         }
         
         private void Model_Build(object? sender, SimCityArgsClick e)

@@ -56,11 +56,30 @@ namespace SimCity.Model
                 _money -= _field.GetMaintenance();
                 
                 //Residential area ticks
+<<<<<<< SimCity/model/GameModel.cs
                 if (_citizens < _field.MaxCitizens)
                     _citizens += 1;
+=======
+                if (_field.NumberOfCitizens < _field.MaxCitizens)
+                {
+                    //TODO: Residents more likely to fill happier zones
+                    List<(Int32, Int32)> residentialZones = _field.AvailableZones("Residential").Where(y => 
+                        _field[y.Item2.Item1, y.Item2.Item2].NumberOfResidents
+                        < (Int32) _field[y.Item2.Item1, y.Item2.Item2].SizeOfZone)
+                        .SelectMany(y => Enumerable.Repeat(y.Item2, y.Item1.Happiness + 1)).ToList();
+
+                    if (residentialZones.Count != 0)
+                    {
+                        Random randSelector = new Random();
+                        (Int32, Int32) selectedField =
+                            residentialZones.ElementAt(randSelector.Next(residentialZones.Count));
+                        _field[selectedField.Item1, selectedField.Item2].NumberOfResidents += 1;
+                    }
+                }
+>>>>>>> SimCity/model/GameModel.cs
             }
 
-            this.GameAdvanced?.Invoke(this, new SimCityArgsTime(_timeElapsed, _citizens, _money));
+            this.GameAdvanced?.Invoke(this, new SimCityArgsTime(_timeElapsed, _field.NumberOfCitizens, _money));
         }
         
         /// <summary>
@@ -79,29 +98,31 @@ namespace SimCity.Model
         /// This method also raises the <see cref="GameBuild"/> event with a <see cref="SimCityArgsClick"/> object containing the updated money amount.
         /// In case the action is cannot be performed <see cref="SimCityArgsClick" /> money variable will be null.
         /// </remarks>
-        public void ClickHandle(Int32 row, Int32 column, String mode, AreaType toBuild = null!)
+        public async void ClickHandle(Int32 row, Int32 column, String mode, AreaType toBuild = null!)
         {
-            try
-            {
-                switch (mode)
+            await Task.Run(() =>
                 {
-                    case "Build":
-                        Int32 cost = _field.Build(row, column, toBuild);
-                        _money -= cost;
-                        break;
-                    case "Remove":
-                        Int32 prize = _field.Remove(row, column);
-                        _money += prize;
-                        break;
-                }
-                
-                GameBuild?.Invoke(this, new SimCityArgsClick(_money));
-            }
-            catch (PersistenceExceptions e)
-            {
-                GameBuild?.Invoke(this, new SimCityArgsClick(null));
-            }
+                    try
+                    {
+                        switch (mode)
+                        {
+                            case "Build":
+                                Int32 cost = _field.Build(row, column, toBuild);
+                                _money -= cost;
+                                break;
+                            case "Remove":
+                                Int32 prize = _field.Remove(row, column);
+                                _money += prize;
+                                break;
+                        }
 
+                        GameBuild?.Invoke(this, new SimCityArgsClick(_money));
+                    }
+                    catch (PersistenceExceptions e)
+                    {
+                        GameBuild?.Invoke(this, new SimCityArgsClick(null));
+                    }
+                });
         }
     }
 }
