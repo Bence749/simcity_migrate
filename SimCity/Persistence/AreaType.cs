@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.DirectoryServices.ActiveDirectory;
+using System.Linq;
 using System.Transactions;
 using System.Windows.Controls.Ribbon.Primitives;
+// ReSharper disable All
 
 namespace SimCity.Persistence;
 
@@ -38,6 +41,7 @@ public class AreaType
         public Int32 RemovePrice { get; }
         public SizeType SizeOfZone { get; set; } = SizeType.Small;
         public Int32 NumberOfWorkers { get; set; } = 0;
+        public Int32 Salary { get; protected set; }
         public List<Citizen> Residents { get; set; } = new List<Citizen>();
         public Int32 Happiness { get; set; } = 0;
         public Int32 AreaSize { get; protected set; }
@@ -56,7 +60,7 @@ public class AreaType
         /// <param name="happinessInc">Defines the happiness increase/decrease in an area</param>
         /// <param name="isSpecial">Specifies whether the field is special</param>
         public AreaType(Int32 maintenanceCost = 0, Int32 buildCost = 0, Int32 removePrice = 0,
-            Int32 areaSize = 0, Int32 happinessInc = 0, Boolean isSpecial = false)
+            Int32 areaSize = 0, Int32 happinessInc = 0, Boolean isSpecial = false, Int32 salary = 0)
         {
             this.MaintenanceCost = maintenanceCost;
             this.BuildCost = buildCost;
@@ -64,6 +68,7 @@ public class AreaType
             this.AreaSize = areaSize;
             this.HappinessInc = happinessInc;
             this.IsSpecial = isSpecial;
+            this.Salary = salary;
         }
         /// <summary>
         /// Get the type of the area.
@@ -74,8 +79,9 @@ public class AreaType
         /// Calculate the tax that the city will get each tick.
         /// </summary>
         /// <returns>Int32 containing the amount of tax.</returns>
-        public virtual Int32 CalculateTax(List<AreaType> neighbouringAreas, Int32 taxPercent) => 0;
+        public virtual Int32 CalculateTax(List<AreaType> neighbourAreas, Int32 taxPercent) => 0;
 
+        public virtual Citizen? Hire(List<AreaType> neighbourAreas) => null;
         protected virtual void Upgrade() { }
         protected virtual void Unhabit() { }
     }
@@ -90,22 +96,23 @@ public class Road : AreaType
 public class CommercialZone : AreaType
 {
     
-    public CommercialZone() : base(20, areaSize: 4) { }
+    public CommercialZone() : base(20, areaSize: 4, salary: 200) { }
 
     public override String GetAreaType() => "Commercial";
-
+    
+    
     private Int32 maxCustomers = 100;
     private Int32 baseMaintenanceCost = 20;
-    
-    public override Int32 CalculateTax(List<AreaType> neighbouringAreas, Int32 taxPercent)
+
+    public override Int32 CalculateTax(List<AreaType> neighbourAreas, Int32 taxPercent)
     {
         if (IsUnhabited) return 0;
         
-        List<(Int32, Int32)> customerResidents = neighbouringAreas.Where(y => y.GetAreaType() == "Residential")
-            .Select(y => (y.Happiness, y.NumberOfResidents)).ToList();
+        List<(Int32, Int32)> customerResidents = neighbourAreas.Where(y => y.GetAreaType() == "Residential")
+            .Select(y => (y.Happiness, y.Residents.Count)).ToList();
         
         //Spending
-        Int32 spending = NumberOfResidents * 200;
+        Int32 spending = NumberOfWorkers * Salary;
         MaintenanceCost = (Int32) (1 + Happiness * 2) * baseMaintenanceCost;
         
         //Income
@@ -129,6 +136,16 @@ public class CommercialZone : AreaType
         return tax;
     }
 
+    public override Citizen? Hire(List<AreaType> neigbourAreas)
+    {
+        Random rnd = new Random();
+        var unemployed = neigbourAreas.Where(y => y.GetAreaType() == "Residential")
+            .SelectMany(y => y.Residents).Where(y => y.WorkplaceID == null && y.CitizenID > 0).OrderBy(y => rnd.Next())
+            .ToList().FirstOrDefault();
+
+        return unemployed;
+    }
+
     protected override void Upgrade()
     {
         if (SizeOfZone == SizeType.Big) return;
@@ -136,6 +153,7 @@ public class CommercialZone : AreaType
         baseMaintenanceCost *= 5;
         maxCustomers *= 3;
         AreaSize += 3;
+        Salary = (Int32)Math.Round(Salary * 1.5);
         
         SizeOfZone = SizeOfZone == SizeType.Small ? SizeType.Medium : SizeType.Big;
     }

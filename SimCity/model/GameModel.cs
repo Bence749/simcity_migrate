@@ -62,12 +62,8 @@ namespace SimCity.Model
                 //Residential area ticks
                 if (_field.NumberOfCitizens < _field.MaxCitizens)
                 {
-                    List<(Int32, Int32)> residentialZones = _field.AvailableZones("Residential").Where(y => 
-                        _field[y.Item2.Item1, y.Item2.Item2].Residents.Count
-                        < (Int32) _field[y.Item2.Item1, y.Item2.Item2].SizeOfZone)
-                        .SelectMany(y => Enumerable.Repeat(y.Item2, y.Item1.Happiness + 1)).ToList();
                     var residentialZones = _field.AvailableZones("Residential").Where(y =>
-                        _field[y.Item2.Item1, y.Item2.Item2].NumberOfResidents
+                        _field[y.Item2.Item1, y.Item2.Item2].Residents.Count
                         < (Int32)_field[y.Item2.Item1, y.Item2.Item2].SizeOfZone).ToList();
 
                     if (residentialZones.Count != 0)
@@ -80,9 +76,10 @@ namespace SimCity.Model
                         Random randSelector = new Random();
                         (Int32, Int32) selectedField =
                             happinessBasedFieldCounts.ElementAt(randSelector.Next(happinessBasedFieldCounts.Count));
-                        _field[selectedField.Item1, selectedField.Item2].NumberOfResidents += 1;
-                            residentialZones.ElementAt(randSelector.Next(residentialZones.Count));
-                        _field[selectedField.Item1, selectedField.Item2].Residents.Add(new Citizen());
+                        _field[selectedField.Item1, selectedField.Item2].Residents
+                            .Add(new Citizen(Enumerable
+                                .Range(1, Int32.MaxValue)
+                                .First(y => !Field.GetCitizens().Select(x => x.CitizenID).Contains(y))));
                     }
                 }
 
