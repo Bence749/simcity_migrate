@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -70,7 +71,7 @@ public class Map
             throw new PersistenceExceptions("Selected area is not surrounded by a road.");
 
         toBuild.Happiness = _fields[row, column].Happiness;
-        if (toBuild.IsSpecial)
+        if (toBuild.HappinessInc != 0)
         {
             var neighbourFields = NeighbouringFields(row, column, toBuild.AreaSize);
             foreach (var fields in neighbourFields.Select(y => y.Item2))
@@ -122,6 +123,33 @@ public class Map
         return output;
     }
 
+    public async Task<Int32> TickZones(Int32 commercialTax, Int32 industrialTax)
+    {
+        var zonesToTick = _fields.Cast<AreaType>()
+            .Select((value, index) => 
+                new { Value = value, 
+                    Index = (index / _fields.GetLength(0), index % _fields.GetLength(1))})
+            .Where(y => y.Value.GetType().GetMethod("CalculateTax") != y.Value.GetType()).ToList();
+
+        Int32 taxIncomeSum = 0;
+        Object taxIncomeSumLock = new Object();
+        foreach (var zone in zonesToTick)
+            await Task.Run(() =>
+            {
+                Int32 taxIncome = zone.Value
+                    .CalculateTax(NeighbouringFields(zone.Index.Item1, zone.Index.Item2, zone.Value.AreaSize)
+                            .Select(y => y.Item1).ToList(),
+                        zone.Value.GetAreaType() == "Commercial" ? commercialTax : industrialTax);
+
+                lock (taxIncomeSumLock)
+                {
+                    taxIncomeSum += taxIncome;
+                }
+            });
+
+        return taxIncomeSum;
+    }
+
     /// <summary>
     /// Returns a list of neighbouring fields within the specified area around the given row and column indices.
     /// </summary>
@@ -133,7 +161,7 @@ public class Map
     /// This method searches for neighbouring fields within a square area of size (2 * area + 1) x (2 * area + 1) centered around the specified row and column indices.
     /// The method returns a list of tuples, where each tuple contains the field value and its row and column indices.
     /// </remarks>
-    private List<(AreaType, (Int32, Int32))> NeighbouringFields(Int32 row, Int32 col, Int32 area = 1)
+    public List<(AreaType, (Int32, Int32))> NeighbouringFields(Int32 row, Int32 col, Int32 area = 1)
     {
         var output = (from i in Enumerable.Range(row - area, 1 + 2 * area)
                                        from j in Enumerable.Range(col - area, 1 + 2 * area)
@@ -144,5 +172,4 @@ public class Map
         return output;
 
     }
-
 }
