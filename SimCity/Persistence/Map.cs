@@ -68,6 +68,13 @@ public class Map
         if (NeighbouringFields(row, column).All(f => f.Item1.GetAreaType() != "Road"))
             throw new PersistenceExceptions("Selected area is not surrounded by a road.");
 
+        toBuild.Happiness = _fields[row, column].Happiness;
+        if (toBuild.IsSpecial)
+        {
+            var neighbourFields = NeighbouringFields(row, column, toBuild.AreaSize);
+            foreach (var fields in neighbourFields.Select(y => y.Item2))
+                _fields[fields.Item1, fields.Item2].Happiness += toBuild.Happiness;
+        }
         _fields[row, column] = toBuild;
         return toBuild.BuildCost;
     }
@@ -84,7 +91,17 @@ public class Map
         if (_fields[row, column].GetAreaType() == "None") 
             throw new PersistenceExceptions("Selected area is already empty!");
         Int32 prize = _fields[row, column].RemovePrice;
-        _fields[row, column] = new AreaType();
+        AreaType newField = new AreaType
+        {
+            Happiness = _fields[row, column].Happiness
+        };
+        if (_fields[row, column].IsSpecial)
+        {
+            var neighbourFields = NeighbouringFields(row, column, _fields[row, column].AreaSize);
+            foreach (var fields in neighbourFields.Select(y => y.Item2))
+                _fields[fields.Item1, fields.Item2].Happiness -= _fields[row, column].Happiness;
+        }
+        _fields[row, column] = newField;
         return prize;
     }
 
