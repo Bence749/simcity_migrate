@@ -62,7 +62,7 @@ namespace SimCity.Model
                     List<(Int32, Int32)> residentialZones = _field.AvailableZones("Residential").Where(y => 
                         _field[y.Item2.Item1, y.Item2.Item2].NumberOfResidents
                         < (Int32) _field[y.Item2.Item1, y.Item2.Item2].SizeOfZone)
-                        .SelectMany(y => Enumerable.Repeat(y.Item2, y.Item1.Happiness)).ToList();
+                        .SelectMany(y => Enumerable.Repeat(y.Item2, y.Item1.Happiness + 1)).ToList();
 
                     if (residentialZones.Count != 0)
                     {

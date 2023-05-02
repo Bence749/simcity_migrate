@@ -74,7 +74,7 @@ public class Map
         {
             var neighbourFields = NeighbouringFields(row, column, toBuild.AreaSize);
             foreach (var fields in neighbourFields.Select(y => y.Item2))
-                _fields[fields.Item1, fields.Item2].Happiness += toBuild.Happiness;
+                _fields[fields.Item1, fields.Item2].Happiness += toBuild.HappinessInc;
         }
         _fields[row, column] = toBuild;
         return toBuild.BuildCost;
@@ -100,7 +100,7 @@ public class Map
         {
             var neighbourFields = NeighbouringFields(row, column, _fields[row, column].AreaSize);
             foreach (var fields in neighbourFields.Select(y => y.Item2))
-                _fields[fields.Item1, fields.Item2].Happiness -= _fields[row, column].Happiness;
+                _fields[fields.Item1, fields.Item2].Happiness -= _fields[row, column].HappinessInc;
         }
         _fields[row, column] = newField;
         return prize;

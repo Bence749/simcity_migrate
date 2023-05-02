@@ -39,6 +39,7 @@ public class AreaType
         public Int32 NumberOfResidents { get; set; } = 0;
         public Int32 Happiness { get; set; } = 0;
         public Int32 AreaSize { get; protected set; }
+        public Int32 HappinessInc { get; protected set; }
         public Boolean IsSpecial { get; protected set; } = false;
 
         /// <summary>
@@ -50,12 +51,13 @@ public class AreaType
         /// <param name="areaSize">Describes the size of area where it increases happiness</param>
         /// <param name="isSpecial">Specifies whether the field is special</param>
         public AreaType(Int32 maintenanceCost = 0, Int32 buildCost = 0, Int32 removePrice = 0,
-            Int32 areaSize = 0, Boolean isSpecial = false)
+            Int32 areaSize = 0, Int32 happinessInc = 0, Boolean isSpecial = false)
         {
             this.MaintenanceCost = maintenanceCost;
             this.BuildCost = buildCost;
             this.RemovePrice = removePrice;
             this.AreaSize = areaSize;
+            this.HappinessInc = happinessInc;
             this.IsSpecial = isSpecial;
         }
         /// <summary>
@@ -100,27 +102,27 @@ public class ResidentialZone : AreaType
 
 public class Police : AreaType
 {
-    public Police() : base(100, 500, 100, 15, true) { }
+    public Police() : base(100, 500, 100, 15, 10, true) { }
     
     public override String GetAreaType() => "Police";
 }
 public class FireDepartment : AreaType
 {
-    public FireDepartment() : base(200, 500, 100, 15, true) { }
+    public FireDepartment() : base(200, 500, 100, 15, 10, true) { }
 
     public override String GetAreaType() => "FireDepartment";
 }
 
 public class Stadium : AreaType
 {
-    public Stadium() : base(500, 1000, 100, 10, true) { }
+    public Stadium() : base(500, 1000, 100, 10, 8, true) { }
     
     public override String GetAreaType() => "Stadium";
 }
 
 public class Tree : AreaType
 {
-    public Tree() : base(1, 50, 10, 7, true) { }
+    public Tree() : base(1, 50, 10, 7, 3, true) { }
     
     public override String GetAreaType() => "Tree";
 }
