@@ -20,7 +20,7 @@ public class Map
     public Int32 RowSize => _fields.GetLength(0);
     public Int32 ColumnSize => _fields.GetLength(1);
     
-    public Int32 NumberOfCitizens => _fields.Cast<AreaType>().Select(y => y.NumberOfResidents).Sum();
+    public Int32 NumberOfCitizens => _fields.Cast<AreaType>().Select(y => y.Residents.Count).Sum();
 
     public Int32 MaxCitizens => _fields.Cast<AreaType>().Select(y => (Int32) y.SizeOfZone).Sum();
 
@@ -77,7 +77,12 @@ public class Map
             foreach (var fields in neighbourFields.Select(y => y.Item2))
                 _fields[fields.Item1, fields.Item2].Happiness += toBuild.HappinessInc;
         }
+
+        toBuild.AreaID = Enumerable.Range(1, Int32.MaxValue)
+            .First(y => !_fields.Cast<AreaType>().Select(y => y.AreaID).Contains(y));
         _fields[row, column] = toBuild;
+        if (_fields[row, column].GetType().GetMethod("Upgrade") != null)
+            _fields[row, column].UpdateEvent += UpdateCitizens;
         return toBuild.BuildCost;
     }
 
@@ -126,14 +131,19 @@ public class Map
     public async Task<Int32> TickZones(Int32 commercialTax, Int32 industrialTax)
     {
         var zonesToTick = _fields.Cast<AreaType>()
-            .Select((value, index) => 
-                new { Value = value, 
-                    Index = (index / _fields.GetLength(0), index % _fields.GetLength(1))})
+            .Select((value, index) =>
+                new
+                {
+                    Value = value,
+                    Index = (index / _fields.GetLength(0), index % _fields.GetLength(1))
+                })
             .Where(y => y.Value.GetType().GetMethod("CalculateTax") != y.Value.GetType()).ToList();
 
         Int32 taxIncomeSum = 0;
         Object taxIncomeSumLock = new Object();
+        Object citizensLock = new Object();
         foreach (var zone in zonesToTick)
+        {
             await Task.Run(() =>
             {
                 Int32 taxIncome = zone.Value
@@ -146,6 +156,34 @@ public class Map
                     taxIncomeSum += taxIncome;
                 }
             });
+            if ((zone.Value.GetType().GetMethod("Hire") != zone.Value.GetType())
+                && zone.Value.NumberOfWorkers < (Int32)zone.Value.SizeOfZone)
+                await Task.Run(() =>
+                {
+                    Citizen? toHire = _fields[zone.Index.Item1, zone.Index.Item2]
+                        .Hire(NeighbouringFields(zone.Index.Item1, zone.Index.Item2, 
+                            ((Int32) zone.Value.AreaSize) * 2).Select(y => y.Item1).ToList());
+                    
+                    if(toHire is not null)
+                        lock (citizensLock)
+                        {
+                            var citizenToHireLoc = _fields.Cast<AreaType>()
+                                .Select((y, index) => new
+                                {
+                                    Value = y, 
+                                    Index = (index / _fields.GetLength(0), index % _fields.GetLength(1))
+                                }).Where(y => y.Value.GetAreaType() == "Residential")
+                                .First(y => y.Value.Residents.Contains(toHire)).Index;
+
+                            Int32 citizenIndex = _fields[citizenToHireLoc.Item1, citizenToHireLoc.Item2].Residents
+                                .FindIndex(y => y == toHire);
+                            _fields[citizenToHireLoc.Item1, citizenToHireLoc.Item2].Residents[citizenIndex].WorkplaceID =
+                                zone.Value.AreaID;
+                            _fields[citizenToHireLoc.Item1, citizenToHireLoc.Item2].Residents[citizenIndex].Income =
+                                zone.Value.Salary;
+                        }
+                });
+        }
 
         return taxIncomeSum;
     }
@@ -171,5 +209,32 @@ public class Map
 
         return output;
 
+    }
+
+    public List<Citizen> GetCitizens()
+    {
+        List<Citizen> citizens = _fields.Cast<AreaType>()
+            .Where(y => y.GetAreaType() == "Residential")
+            .SelectMany(y => y.Residents).ToList();
+
+        return citizens;
+    }
+    
+    public void UpdateCitizens(object sender, CitizenUpdateArgs e)
+    {
+        for(Int32 i = 0; i < _fields.GetLength(0); ++i)
+            for (Int32 j = 0; j < _fields.GetLength(1); ++j)
+            {
+                if (_fields[i, j].GetAreaType() == "Residential" &&
+                    _fields[i, j].Residents.Select(y => y.WorkplaceID).Contains(e.areaId))
+                {
+                    List<Int32> indices = _fields[i, j].Residents
+                        .Select((value, index) => new { Value = value.WorkplaceID, Index = index })
+                        .Where(y => y.Value == e.areaId).Select(y => y.Index).ToList();
+
+                    foreach (Int32 index in indices)
+                        _fields[i, j].Residents[index].Income = e.salary;
+                }
+            }
     }
 }
