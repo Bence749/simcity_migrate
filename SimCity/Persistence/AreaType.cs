@@ -49,6 +49,8 @@ public class AreaType
         public Boolean IsSpecial { get; protected set; } = false;
         public Boolean IsUnhabited { get; protected set; } = false;
         protected Int32 Patience { get; set; } = 100;
+        
+        public event EventHandler<CitizenUpdateArgs>? UpdateEvent;
 
         /// <summary>
         /// Initialize variables.
@@ -70,6 +72,12 @@ public class AreaType
             this.IsSpecial = isSpecial;
             this.Salary = salary;
         }
+
+        protected void OnAreaUpdate(CitizenUpdateArgs e)
+        {
+            UpdateEvent?.Invoke(this, e);
+        }
+        
         /// <summary>
         /// Get the type of the area.
         /// </summary>
@@ -80,6 +88,7 @@ public class AreaType
         /// </summary>
         /// <returns>Int32 containing the amount of tax.</returns>
         public virtual Int32 CalculateTax(List<AreaType> neighbourAreas, Int32 taxPercent) => 0;
+        public virtual Int32 CalculateTax(List<Citizen> citizens, Int32 taxPercent) => 0;
 
         public virtual Citizen? Hire(List<AreaType> neighbourAreas) => null;
         protected virtual void Upgrade() { }
@@ -156,11 +165,15 @@ public class CommercialZone : AreaType
         Salary = (Int32)Math.Round(Salary * 1.5);
         
         SizeOfZone = SizeOfZone == SizeType.Small ? SizeType.Medium : SizeType.Big;
+        
+        OnAreaUpdate(new CitizenUpdateArgs(AreaID, Salary));
     }
 
     protected override void Unhabit()
     {
         this.IsUnhabited = true;
+        
+        OnAreaUpdate(new CitizenUpdateArgs(AreaID, 0));
     }
 }
 
@@ -174,6 +187,14 @@ public class IndustrialZone : AreaType
 public class ResidentialZone : AreaType
 {
     public ResidentialZone() : base(25) { }
+
+    public override int CalculateTax(List<Citizen> citizens, int taxPercent)
+    {
+        Int32 totalIncome = citizens.Select(y => y.Income).Where(y => y != 0).Sum();
+        Int32 tax = (Int32) Math.Round(totalIncome * (taxPercent / 100.0));
+
+        return tax;
+    }
 
     public override String GetAreaType() => "Residential";
 }

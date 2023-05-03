@@ -81,6 +81,8 @@ public class Map
         toBuild.AreaID = Enumerable.Range(1, Int32.MaxValue)
             .First(y => !_fields.Cast<AreaType>().Select(y => y.AreaID).Contains(y));
         _fields[row, column] = toBuild;
+        if (_fields[row, column].GetType().GetMethod("Upgrade") != null)
+            _fields[row, column].UpdateEvent += UpdateCitizens;
         return toBuild.BuildCost;
     }
 
@@ -216,5 +218,23 @@ public class Map
             .SelectMany(y => y.Residents).ToList();
 
         return citizens;
+    }
+    
+    public void UpdateCitizens(object sender, CitizenUpdateArgs e)
+    {
+        for(Int32 i = 0; i < _fields.GetLength(0); ++i)
+            for (Int32 j = 0; j < _fields.GetLength(1); ++j)
+            {
+                if (_fields[i, j].GetAreaType() == "Residential" &&
+                    _fields[i, j].Residents.Select(y => y.WorkplaceID).Contains(e.areaId))
+                {
+                    List<Int32> indices = _fields[i, j].Residents
+                        .Select((value, index) => new { Value = value.WorkplaceID, Index = index })
+                        .Where(y => y.Value == e.areaId).Select(y => y.Index).ToList();
+
+                    foreach (Int32 index in indices)
+                        _fields[i, j].Residents[index].Income = e.salary;
+                }
+            }
     }
 }
