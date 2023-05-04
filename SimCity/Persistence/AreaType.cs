@@ -4,6 +4,7 @@ using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
 using System.Transactions;
 using System.Windows.Controls.Ribbon.Primitives;
+// ReSharper disable All
 
 namespace SimCity.Persistence;
 
@@ -13,11 +14,11 @@ namespace SimCity.Persistence;
 public enum SizeType
 {
     /// <summary> Small size = 10 residents/employees </summary>
-    Small = 15,
+    Small = 30,
     /// <summary> Small size = 25 residents/employees </summary>
-    Medium = 25,
+    Medium = 100,
     /// <summary> Small size = 50 residents/employees </summary>
-    Big = 50
+    Big = 500
 }
 
 /// <summary>
@@ -72,11 +73,8 @@ public class AreaType
             this.Salary = salary;
         }
 
-        protected void OnAreaUpdate(CitizenUpdateArgs e)
-        {
-            UpdateEvent?.Invoke(this, e);
-        }
-        
+        protected void OnAreaUpdate(CitizenUpdateArgs e) => UpdateEvent?.Invoke(this, e);
+
         /// <summary>
         /// Get the type of the area.
         /// </summary>
@@ -91,6 +89,7 @@ public class AreaType
 
         public virtual Citizen? Hire(List<AreaType> neighbourAreas) => null;
         protected virtual void Upgrade() { }
+        protected virtual void Upgrade(List<Citizen> citizens) { }
         protected virtual void Unhabit() { }
     }
 
@@ -109,8 +108,8 @@ public class CommercialZone : AreaType
     public override String GetAreaType() => "Commercial";
     
     
-    private Int32 maxCustomers = 100;
-    private Int32 baseMaintenanceCost = 20;
+    private Int32 _maxCustomers = 50;
+    private Int32 _baseMaintenanceCost = 50;
 
     public override Int32 CalculateTax(List<AreaType> neighbourAreas, Int32 taxPercent)
     {
@@ -121,11 +120,11 @@ public class CommercialZone : AreaType
         
         //Spending
         Int32 spending = NumberOfWorkers * Salary;
-        MaintenanceCost = (Int32) (1 + Happiness * 2) * baseMaintenanceCost;
+        MaintenanceCost = (Int32) (1 + Happiness * 2) * _baseMaintenanceCost;
         
         //Income
         Int32 income = customerResidents.Sum(y => 
-            (Int32) Math.Round((y.Item1 * 0.3 + 1) * (y.Item2 < maxCustomers ? y.Item2 : maxCustomers) * 50));
+            (Int32) Math.Round((y.Item1 * 0.3 + 1) * (y.Item2 < _maxCustomers ? y.Item2 : _maxCustomers) * 50));
 
         Int32 tax = (Int32)Math.Round((income - spending) * (taxPercent / 100.0));
         Double RoI = (income - (spending + MaintenanceCost)) / (spending + MaintenanceCost);
@@ -133,7 +132,7 @@ public class CommercialZone : AreaType
         if (RoI < 0.2 || RoI > 0.8)
             Patience -= 1;
         else
-            Patience -= 1;
+            Patience = 100;
         
         if(Patience == 0)
             if(RoI > 0.8)
@@ -144,10 +143,10 @@ public class CommercialZone : AreaType
         return tax;
     }
 
-    public override Citizen? Hire(List<AreaType> neigbourAreas)
+    public override Citizen? Hire(List<AreaType> neighbourAreas)
     {
         Random rnd = new Random();
-        var unemployed = neigbourAreas.Where(y => y.GetAreaType() == "Residential")
+        var unemployed = neighbourAreas.Where(y => y.GetAreaType() == "Residential")
             .SelectMany(y => y.Residents).Where(y => y.WorkplaceID == null && y.CitizenID > 0).OrderBy(y => rnd.Next())
             .ToList().FirstOrDefault();
 
@@ -158,8 +157,8 @@ public class CommercialZone : AreaType
     {
         if (SizeOfZone == SizeType.Big) return;
         
-        baseMaintenanceCost *= 5;
-        maxCustomers *= 3;
+        _baseMaintenanceCost *= 5;
+        _maxCustomers *= 3;
         AreaSize += 3;
         Salary = (Int32)Math.Round(Salary * 1.5);
         
@@ -185,14 +184,49 @@ public class IndustrialZone : AreaType
 
 public class ResidentialZone : AreaType
 {
-    public ResidentialZone() : base(25) { }
+    private Int32 _costOfLiving;
+
+    public ResidentialZone() : base(25)
+    {
+        _costOfLiving = 150;
+    }
 
     public override int CalculateTax(List<Citizen> citizens, int taxPercent)
     {
         Int32 totalIncome = citizens.Select(y => y.Income).Where(y => y != 0).Sum();
         Int32 tax = (Int32) Math.Round(totalIncome * (taxPercent / 100.0));
 
+        foreach (var citizen in citizens)
+        {
+            if (_costOfLiving / citizen.Income > 0.8)
+                citizen.Happiness--;
+            else if (_costOfLiving / citizen.Income < 0.5)
+                citizen.Happiness++;
+        }
+
+        double citizensHappiness = citizens.Select(y => y.Happiness).Average();
+        if(citizensHappiness < 0.2 || citizensHappiness > 0.8)
+            Patience -= 1;
+        else
+            Patience = 100;
+        
+        if(Patience == 0)
+            if(citizensHappiness > 0.8)
+                Upgrade();
+            else
+                Unhabit();
+        
+        
+        
         return tax;
+    }
+
+    protected override void Upgrade()
+    {
+        if (SizeOfZone == SizeType.Big) return;
+
+        _costOfLiving *= 3;
+        SizeOfZone = SizeOfZone == SizeType.Small ? SizeType.Medium : SizeType.Big;
     }
 
     public override String GetAreaType() => "Residential";

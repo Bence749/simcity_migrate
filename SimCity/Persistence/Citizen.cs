@@ -10,6 +10,7 @@ public class Citizen
     public Int32 Income { get; set; }= 0;
     public Int32? WorkplaceID { get; set; } = null;
     public Int32 CitizenID => _citizenID;
+    public Int32 Happiness { get; set; } = 100;
 
     public Citizen(Int32 citizenId)
     {

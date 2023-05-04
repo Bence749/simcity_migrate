@@ -17,13 +17,29 @@ public enum PlaySpeed { Stop, Normal, Fast, Faster }
 
 namespace SimCity.Model
 {
+    public class LimitedQueue<T> : Queue<T>
+    {
+        private readonly int _maxSize;
+
+        public LimitedQueue(int maxSize)
+        {
+            _maxSize = maxSize;
+        }
+
+        public new void Enqueue(T item)
+        {
+            while (this.Count >= _maxSize)
+                this.Dequeue();
+            base.Enqueue(item);
+        }
+    }
     public class GameModel
     {
         private Map _field = null!;
         private Int32 _timeElapsed;
         private Int32 _tickCount;
         private Int32 _money;
-        private Int32 _citizens;
+        private LimitedQueue<Citizen> _tmpCitizens;
 
         public PlaySpeed GamePace { get; set; }
         public Int32 CommercialTax { get; set; }
@@ -38,10 +54,10 @@ namespace SimCity.Model
         {
             _timeElapsed = 0;
             _money = 100000;
-            _citizens = 0;
             GamePace = PlaySpeed.Normal;
             CommercialTax = 10;
             IndustrialTax = 10;
+            _tmpCitizens = new LimitedQueue<Citizen>(100);
         }
 
         public void CreateGame(Int32 rows, Int32 columns)
@@ -64,7 +80,12 @@ namespace SimCity.Model
                     var residentialZones = _field.AvailableZones("Residential").Where(y =>
                         _field[y.Item2.Item1, y.Item2.Item2].Residents.Count
                         < (Int32)_field[y.Item2.Item1, y.Item2.Item2].SizeOfZone).ToList();
-
+                    
+                    Citizen toPlace = new Citizen(Enumerable
+                        .Range(1, Int32.MaxValue)
+                        .First(y => !Field.GetCitizens().Select(x => x.CitizenID)
+                            .Concat(_tmpCitizens.Select(c => c.CitizenID)).Contains(y)));
+                    
                     if (residentialZones.Count != 0)
                     {
                         Int32 minHappiness = residentialZones.Min(y => y.Item1.Happiness) + 1;
@@ -75,11 +96,17 @@ namespace SimCity.Model
                         Random randSelector = new Random();
                         (Int32, Int32) selectedField =
                             happinessBasedFieldCounts.ElementAt(randSelector.Next(happinessBasedFieldCounts.Count));
-                        _field[selectedField.Item1, selectedField.Item2].Residents
-                            .Add(new Citizen(Enumerable
-                                .Range(1, Int32.MaxValue)
-                                .First(y => !Field.GetCitizens().Select(x => x.CitizenID).Contains(y))));
+                        
+                        if(_tmpCitizens.Count == 0)
+                            _field[selectedField.Item1, selectedField.Item2].Residents.Add(toPlace);
+                        else
+                        {
+                            _field[selectedField.Item1, selectedField.Item2].Residents.Add(_tmpCitizens.Dequeue());
+                            _tmpCitizens.Enqueue(toPlace);
+                        }
                     }
+                    else 
+                        _tmpCitizens.Enqueue(toPlace);
                 }
 
                 Task.Run(() => _money += Field.TickZones(CommercialTax, IndustrialTax).Result);
