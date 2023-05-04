@@ -91,8 +91,17 @@ namespace SimCity.ViewModel
             get => _currentBuildAction;
             set
             {
-                if (_currentBuildAction == value) return;
-                _currentBuildAction = value;
+                if (_currentBuildAction == value)
+                {
+                    _currentBuildAction = String.Empty;
+                    OnPropertyChanged();
+                    return;
+                }
+                else
+                {
+                    _currentBuildAction = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -350,8 +359,6 @@ namespace SimCity.ViewModel
                             _model.ClickHandle(field.X, field.Y, "Build", new FireDepartment());
                             break;
                     }
-
-                CurrentBuildAction = "";
                 
                 RefreshTable();
             }

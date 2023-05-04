@@ -135,7 +135,6 @@
                 <Button Command="{Binding LowerTaxCommand}"> Adó -</Button>
                 <Button> Fejlesztés</Button>
             </ItemsControl>
-
             <ScrollViewer Grid.Row="1" Grid.Column="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
                 <ItemsControl ItemsSource="{Binding Fields}">
                     <!--az mezőket tároló vezérlő-->
