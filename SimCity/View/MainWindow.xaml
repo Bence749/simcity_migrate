@@ -119,8 +119,23 @@
 
             </ItemsControl>
 
-            
-            
+            <ItemsControl DockPanel.Dock="Left">
+                <TextBlock>INFOPANEL</TextBlock>
+                <Label>Zóna típusa: </Label>
+                <Label Content="{Binding SelectedField.ZoneType}"/>
+                <Label>Kihasználtság: </Label>
+                <Label Content="{Binding SelectedField.NumberOfResidents}"/>
+                <Label>Kapacitás: </Label>
+                <Label Content="{Binding SelectedField.Capacity}"></Label>
+                <Label>Elégedettség: </Label>
+                <Label Content="{Binding SelectedField.Happiness}"/>
+                <Label>Adó: </Label>
+                <Label Content="{Binding SelectedField.TaxRate}"/>
+                <Button Command="{Binding RaiseTaxCommand}"> Adó +</Button>
+                <Button Command="{Binding LowerTaxCommand}"> Adó -</Button>
+                <Button> Fejlesztés</Button>
+            </ItemsControl>
+
             <ScrollViewer Grid.Row="1" Grid.Column="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
                 <ItemsControl ItemsSource="{Binding Fields}">
                     <!--az mezőket tároló vezérlő-->
@@ -242,7 +257,10 @@
                     </ItemsControl.ItemContainerStyle>
                 </ItemsControl>
             </ScrollViewer>
+
+        
         </DockPanel>
+        
         <StatusBar Grid.Row="2">
             <StatusBarItem>
                 <TextBlock Text="Pénz: "/>

@@ -24,6 +24,7 @@ namespace SimCity.ViewModel
         private Int32 _populationSum = 0;
         private String _currentBuildAction = String.Empty;
         public string? cityName; //add button and shit
+        public SimCityField _selectedField;
 
 
         #endregion
@@ -121,6 +122,10 @@ namespace SimCity.ViewModel
         public DelegateCommand NewGameSmallCommand { get; private set; }
         public DelegateCommand CatastopheCommand { get; private set; }
 
+        public DelegateCommand RaiseTaxCommand { get; private set; }
+
+        public DelegateCommand LowerTaxCommand { get; private set; }
+
         public DelegateCommand InfoCommand { get; private set; }
 
         public DelegateCommand ExitCommand { get; private set; }
@@ -128,6 +133,15 @@ namespace SimCity.ViewModel
         public ObservableCollection<SimCityField> Fields { get; set; }
 
         public ObservableCollection<MenuField> MenuItems { get; set; }
+
+        public SimCityField SelectedField 
+        {   get => _selectedField; 
+            set 
+            {
+                _selectedField = value;
+                OnPropertyChanged(); 
+            }
+        }
 
         #endregion
 
@@ -160,6 +174,8 @@ namespace SimCity.ViewModel
             InfoCommand = new DelegateCommand(param => InfoPanel());
 
             CatastopheCommand = new DelegateCommand(param => ForestFire());
+            RaiseTaxCommand = new DelegateCommand(param => RaiseTax());
+            LowerTaxCommand = new DelegateCommand(param => ReduceTax());
 
             ExitCommand = new DelegateCommand(param => OnExitGame());
 
@@ -190,6 +206,7 @@ namespace SimCity.ViewModel
                 if(field.NumberOfResidents > 0)
                 {
                     field.Happiness = _model.Field[field.X, field.Y].Happiness;
+                    //field.TaxRate =; TODO
                     if (_model.Field[field.X, field.Y].SizeOfZone == SizeType.Medium)
                         field.Capacity = 25;
                     else if(_model.Field[field.X, field.Y].SizeOfZone == SizeType.Big)
@@ -197,6 +214,26 @@ namespace SimCity.ViewModel
                 }
             }
             
+        }
+
+        private void RaiseTax()
+        {
+            if (SelectedField.TaxRate < 100)
+            {
+                SelectedField.TaxRate += 10;
+                return;
+            }
+            else return;
+        }
+
+        private void ReduceTax()
+        {
+            if (SelectedField.TaxRate > 10)
+            {
+                SelectedField.TaxRate -= 10;
+                return;
+            }
+            else return;
         }
 
         //az infopanel mindig megállítja a játékot, majd 1-es sebességen (Normal) indítja újra, ha bezárul a felugró ablak
@@ -244,7 +281,7 @@ namespace SimCity.ViewModel
                         ClickCommand = new DelegateCommand(param => ClickField(Convert.ToInt32(param))),
                         NumberOfResidents = new AreaType().residents.Count,
                         MaintanenceCost = new AreaType().MaintenanceCost,
-                        //TaxRate = 
+                        TaxRate = 10,
                         Happiness = new AreaType().Happiness,
                         Capacity = 15, //starts at 15, aka SMALL
                         RemovePrice = new AreaType().RemovePrice,
@@ -269,6 +306,22 @@ namespace SimCity.ViewModel
 
                 if (paramsToClick[0] == "Remove")
                     _model.ClickHandle(field.X, field.Y, paramsToClick[0]);
+                else if (Fields[index].ZoneType == "Residential" || Fields[index].ZoneType == "Commercial" || Fields[index].ZoneType == "Industrial")
+                {
+                    
+                    SelectedField = field;
+                    /*SpeedOfGame = Convert.ToString(0);
+                    MessageBox.Show(field.ZoneType + " Zone" + 
+                        Environment.NewLine + "Lakosok: " + field.NumberOfResidents + 
+                        Environment.NewLine + "Kapacitás: " + field.Capacity +
+                        Environment.NewLine + "Elégedettség: " + field.Happiness +
+                        Environment.NewLine + "Fentartási költség: " + field.MaintanenceCost +
+                        Environment.NewLine + "Bontási kompenzáció: " + field.RemovePrice +
+                        Environment.NewLine + "Adó: " + "TO BE IMPLEMENTED"
+                        , "SimCity", MessageBoxButton.OK, MessageBoxImage.Information);
+                    SpeedOfGame = Convert.ToString(1);*/
+                    RefreshTable();
+                }
                 else
                     switch (paramsToClick[1])
                     {
@@ -305,7 +358,8 @@ namespace SimCity.ViewModel
             else if (Fields[index].ZoneType == "Residential" || Fields[index].ZoneType == "Commercial" || Fields[index].ZoneType == "Industrial")
             {
                 SimCityField field = Fields[index];
-                SpeedOfGame = Convert.ToString(0);
+                SelectedField = field;
+                /*SpeedOfGame = Convert.ToString(0);
                 MessageBox.Show(field.ZoneType + " Zone" + 
                     Environment.NewLine + "Lakosok: " + field.NumberOfResidents + 
                     Environment.NewLine + "Kapacitás: " + field.Capacity +
@@ -314,7 +368,8 @@ namespace SimCity.ViewModel
                     Environment.NewLine + "Bontási kompenzáció: " + field.RemovePrice +
                     Environment.NewLine + "Adó: " + "TO BE IMPLEMENTED"
                     , "SimCity", MessageBoxButton.OK, MessageBoxImage.Information);
-                SpeedOfGame = Convert.ToString(1);
+                SpeedOfGame = Convert.ToString(1);*/
+                RefreshTable();
             }
         }
 

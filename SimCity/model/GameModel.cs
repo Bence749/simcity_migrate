@@ -76,6 +76,10 @@ namespace SimCity.Model
                 ++_timeElapsed;
                 _money -= _field.GetMaintenance();
                 
+<<<<<<< SimCity/model/GameModel.cs
+                //Residential area ticks
+=======
+>>>>>>> SimCity/model/GameModel.cs
                 if (_field.NumberOfCitizens < _field.MaxCitizens)
                 {
                     var residentialZones = _field.AvailableZones("Residential").Where(y =>
@@ -109,6 +113,8 @@ namespace SimCity.Model
                     else 
                         _tmpCitizens.Enqueue(toPlace);
                 }
+<<<<<<< SimCity/model/GameModel.cs
+=======
 
                 Object MoneyLock = new object();
                 Task.Run(() =>
@@ -136,6 +142,7 @@ namespace SimCity.Model
                 });
 
                 this.GameAdvanced?.Invoke(this, new SimCityArgsTime(_timeElapsed, _field.NumberOfCitizens, _money));
+>>>>>>> SimCity/model/GameModel.cs
             }
 
         }

@@ -45,7 +45,7 @@ namespace SimCity.ViewModel
                 }
             }
         }
-       /* public Int32 TaxRate
+        public Int32 TaxRate
         {
             get { return _taxRate; }
             set
@@ -56,7 +56,7 @@ namespace SimCity.ViewModel
                     OnPropertyChanged();
                 }
             }
-        }*/
+        }
         public Int32 Happiness
         {
             get { return _happiness; }
