@@ -47,7 +47,7 @@ public class AreaType
         public Int32 AreaSize { get; protected set; }
         public Int32 HappinessInc { get; protected set; }
         public Boolean IsSpecial { get; protected set; } = false;
-        public Boolean IsUnhabited { get; protected set; } = false;
+        public Boolean IsInhabited { get; protected set; } = false;
         protected Int32 Patience { get; set; } = 100;
         
         public event EventHandler<CitizenUpdateArgs>? UpdateEvent;
@@ -113,7 +113,7 @@ public class CommercialZone : AreaType
 
     public override Int32 CalculateTax(List<AreaType> neighbourAreas, Int32 taxPercent)
     {
-        if (IsUnhabited) return 0;
+        if (IsInhabited) return 0;
         
         List<(Int32, Int32)> customerResidents = neighbourAreas.Where(y => y.GetAreaType() == "Residential")
             .Select(y => (y.Happiness, y.Residents.Count)).ToList();
@@ -169,7 +169,7 @@ public class CommercialZone : AreaType
 
     protected override void Unhabit()
     {
-        this.IsUnhabited = true;
+        this.IsInhabited = true;
         
         OnAreaUpdate(new CitizenUpdateArgs(AreaID, 0));
     }
@@ -227,6 +227,11 @@ public class ResidentialZone : AreaType
 
         _costOfLiving *= 3;
         SizeOfZone = SizeOfZone == SizeType.Small ? SizeType.Medium : SizeType.Big;
+    }
+
+    protected override void Unhabit()
+    {
+        this.IsInhabited = true;
     }
 
     public override String GetAreaType() => "Residential";
