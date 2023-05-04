@@ -13,11 +13,11 @@ namespace SimCity.Persistence;
 /// </summary>
 public enum SizeType
 {
-    /// <summary> Small size = 10 residents/employees </summary>
+    /// <summary> Small size = 30 residents/employees </summary>
     Small = 30,
-    /// <summary> Small size = 25 residents/employees </summary>
+    /// <summary> Small size = 100 residents/employees </summary>
     Medium = 100,
-    /// <summary> Small size = 50 residents/employees </summary>
+    /// <summary> Small size = 500 residents/employees </summary>
     Big = 500
 }
 
@@ -26,72 +26,76 @@ public enum SizeType
 /// </summary>
 public class AreaType
 {
-        public Int32 AreaID { get; set; } = 0;
-        /// <summary>
-        /// Each tick this amount will get deducted from the money.
-        /// </summary>
-        public Int32 MaintenanceCost { get; protected set; }
-        /// <summary>
-        /// Cost to build the zone
-        /// </summary>
-        public Int32 BuildCost { get; }
-        /// <summary>
-        /// Amount of money the city will get if the user demolish a zone
-        /// </summary>
-        public Int32 RemovePrice { get; }
-        public SizeType SizeOfZone { get; set; } = SizeType.Small;
-        public Int32 NumberOfWorkers { get; set; } = 0;
-        public Int32 Salary { get; protected set; }
-        public List<Citizen> Residents { get; set; } = new List<Citizen>();
-        public Int32 Happiness { get; set; } = 0;
-        public Int32 AreaSize { get; protected set; }
-        public Int32 HappinessInc { get; protected set; }
-        public Boolean IsSpecial { get; protected set; } = false;
-        public Boolean IsInhabited { get; protected set; } = false;
-        protected Int32 Patience { get; set; } = 100;
-        
-        public event EventHandler<CitizenUpdateArgs>? UpdateEvent;
+    public List<Citizen> residents = new List<Citizen>();
+    
+    public Int32 AreaID { get; set; } = 0;
+    /// <summary>
+    /// Each tick this amount will get deducted from the money.
+    /// </summary>
+    public Int32 MaintenanceCost { get; protected set; }
+    /// <summary>
+    /// Cost to build the zone
+    /// </summary>
+    public Int32 BuildCost { get; }
+    /// <summary>
+    /// Amount of money the city will get if the user demolish a zone
+    /// </summary>
+    public Int32 RemovePrice { get; }
+    public SizeType SizeOfZone { get; set; } = SizeType.Small;
+    public Int32 NumberOfWorkers { get; set; } = 0;
+    public Int32 Salary { get; protected set; }
+    public Int32 Happiness { get; set; } = 0;
+    public Int32 AreaSize { get; protected set; }
+    public Int32 HappinessInc { get; protected set; }
+    public Boolean IsSpecial { get; protected set; } = false;
+    public Boolean IsInhabited { get; protected set; } = false;
+    protected Int32 Patience { get; set; } = 100;
+    
+    public event EventHandler<CitizenUpdateArgs>? UpdateEvent;
+    public event EventHandler<(Int32, Int32)>? FireEvent; 
 
-        /// <summary>
-        /// Initialize variables.
-        /// </summary>
-        /// <param name="maintenanceCost">Cost to maintain zone per tick</param>
-        /// <param name="buildCost">Cost to build the zone</param>
-        /// <param name="removePrice">Money you will get if you remove the zone</param>
-        /// <param name="areaSize">Describes the size of area where it increases happiness</param>
-        /// <param name="happinessInc">Defines the happiness increase/decrease in an area</param>
-        /// <param name="isSpecial">Specifies whether the field is special</param>
-        public AreaType(Int32 maintenanceCost = 0, Int32 buildCost = 0, Int32 removePrice = 0,
-            Int32 areaSize = 0, Int32 happinessInc = 0, Boolean isSpecial = false, Int32 salary = 0)
-        {
-            this.MaintenanceCost = maintenanceCost;
-            this.BuildCost = buildCost;
-            this.RemovePrice = removePrice;
-            this.AreaSize = areaSize;
-            this.HappinessInc = happinessInc;
-            this.IsSpecial = isSpecial;
-            this.Salary = salary;
-        }
-
-        protected void OnAreaUpdate(CitizenUpdateArgs e) => UpdateEvent?.Invoke(this, e);
-
-        /// <summary>
-        /// Get the type of the area.
-        /// </summary>
-        /// <returns>Type of the area in String</returns>
-        public virtual String GetAreaType() => "None";
-        /// <summary>
-        /// Calculate the tax that the city will get each tick.
-        /// </summary>
-        /// <returns>Int32 containing the amount of tax.</returns>
-        public virtual Int32 CalculateTax(List<AreaType> neighbourAreas, Int32 taxPercent) => 0;
-        public virtual Int32 CalculateTax(List<Citizen> citizens, Int32 taxPercent) => 0;
-
-        public virtual Citizen? Hire(List<AreaType> neighbourAreas) => null;
-        protected virtual void Upgrade() { }
-        protected virtual void Upgrade(List<Citizen> citizens) { }
-        protected virtual void Unhabit() { }
+    /// <summary>
+    /// Initialize variables.
+    /// </summary>
+    /// <param name="maintenanceCost">Cost to maintain zone per tick</param>
+    /// <param name="buildCost">Cost to build the zone</param>
+    /// <param name="removePrice">Money you will get if you remove the zone</param>
+    /// <param name="areaSize">Describes the size of area where it increases happiness</param>
+    /// <param name="happinessInc">Defines the happiness increase/decrease in an area</param>
+    /// <param name="isSpecial">Specifies whether the field is special</param>
+    public AreaType(Int32 maintenanceCost = 0, Int32 buildCost = 0, Int32 removePrice = 0,
+        Int32 areaSize = 0, Int32 happinessInc = 0, Boolean isSpecial = false, Int32 salary = 0)
+    {
+        this.MaintenanceCost = maintenanceCost;
+        this.BuildCost = buildCost;
+        this.RemovePrice = removePrice;
+        this.AreaSize = areaSize;
+        this.HappinessInc = happinessInc;
+        this.IsSpecial = isSpecial;
+        this.Salary = salary;
     }
+
+    protected void OnAreaUpdate(CitizenUpdateArgs e) => UpdateEvent?.Invoke(this, e);
+    protected void OnFire((Int32, Int32) e) => FireEvent?.Invoke(this, e);
+
+    /// <summary>
+    /// Get the type of the area.
+    /// </summary>
+    /// <returns>Type of the area in String</returns>
+    public virtual String GetAreaType() => "None";
+    /// <summary>
+    /// Calculate the tax that the city will get each tick.
+    /// </summary>
+    /// <returns>Int32 containing the amount of tax.</returns>
+    public virtual Int32 CalculateTax(List<AreaType> neighbourAreas, Int32 taxPercent) => 0;
+    public virtual Int32 CalculateTax(ref List<Citizen> citizens, Int32 taxPercent) => 0;
+
+    public virtual Citizen? Hire(List<AreaType> neighbourAreas) => null;
+    public virtual void Fire(Int32 areaID, Int32 numberOfFired) { }
+    protected virtual void Upgrade() { }
+    protected virtual void Upgrade(List<Citizen> citizens) { }
+    protected virtual void Unhabit() { }
+}
 
 public class Road : AreaType
 {
@@ -110,13 +114,14 @@ public class CommercialZone : AreaType
     
     private Int32 _maxCustomers = 50;
     private Int32 _baseMaintenanceCost = 50;
+    private Double RoI = 1;
 
     public override Int32 CalculateTax(List<AreaType> neighbourAreas, Int32 taxPercent)
     {
         if (IsInhabited) return 0;
         
         List<(Int32, Int32)> customerResidents = neighbourAreas.Where(y => y.GetAreaType() == "Residential")
-            .Select(y => (y.Happiness, y.Residents.Count)).ToList();
+            .Select(y => (y.Happiness, y.residents.Count)).ToList();
         
         //Spending
         Int32 spending = NumberOfWorkers * Salary;
@@ -127,12 +132,15 @@ public class CommercialZone : AreaType
             (Int32) Math.Round((y.Item1 * 0.3 + 1) * (y.Item2 < _maxCustomers ? y.Item2 : _maxCustomers) * 50));
 
         Int32 tax = (Int32)Math.Round((income - spending) * (taxPercent / 100.0));
-        Double RoI = (income - (spending + MaintenanceCost)) / (spending + MaintenanceCost);
+        RoI = (income - (spending + MaintenanceCost)) / (spending + MaintenanceCost);
 
-        if (RoI < 0.2 || RoI > 0.8)
+        if (RoI < 0.3 || RoI > 0.8)
             Patience -= 1;
         else
             Patience = 100;
+
+        if (RoI < 0.3 && Patience % (Double)Math.Round(100.0 / (Int32)SizeOfZone) == 0)
+            Fire(AreaID, 100 / (Int32) SizeOfZone > 1 ? 1 : (Int32) Math.Round(1 / (100.0 / (Int32) SizeOfZone)));
         
         if(Patience == 0)
             if(RoI > 0.8)
@@ -143,11 +151,15 @@ public class CommercialZone : AreaType
         return tax;
     }
 
+    public override void Fire(Int32 areaID, Int32 numberOfFired) => OnFire((areaID, numberOfFired));
+
     public override Citizen? Hire(List<AreaType> neighbourAreas)
     {
+        if (RoI < 0.3) return null;
+        
         Random rnd = new Random();
         var unemployed = neighbourAreas.Where(y => y.GetAreaType() == "Residential")
-            .SelectMany(y => y.Residents).Where(y => y.WorkplaceID == null && y.CitizenID > 0).OrderBy(y => rnd.Next())
+            .SelectMany(y => y.residents).Where(y => y.WorkplaceId == null && y.CitizenId > 0).OrderBy(y => rnd.Next())
             .ToList().FirstOrDefault();
 
         return unemployed;
@@ -191,7 +203,7 @@ public class ResidentialZone : AreaType
         _costOfLiving = 150;
     }
 
-    public override int CalculateTax(List<Citizen> citizens, int taxPercent)
+    public override int CalculateTax(ref List<Citizen> citizens, int taxPercent)
     {
         Int32 totalIncome = citizens.Select(y => y.Income).Where(y => y != 0).Sum();
         Int32 tax = (Int32) Math.Round(totalIncome * (taxPercent / 100.0));

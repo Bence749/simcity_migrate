@@ -44,7 +44,7 @@ namespace SimCity.Model
         public PlaySpeed GamePace { get; set; }
         public Int32 CommercialTax { get; set; }
         public Int32 IndustrialTax { get; set; }
-        
+        public Int32 ResidentialTax { get; set; }
         public Map Field => _field;
 
         public event EventHandler<SimCityArgsTime>? GameAdvanced;
@@ -57,6 +57,7 @@ namespace SimCity.Model
             GamePace = PlaySpeed.Normal;
             CommercialTax = 10;
             IndustrialTax = 10;
+            ResidentialTax = 10;
             _tmpCitizens = new LimitedQueue<Citizen>(100);
         }
 
@@ -78,13 +79,13 @@ namespace SimCity.Model
                 if (_field.NumberOfCitizens < _field.MaxCitizens)
                 {
                     var residentialZones = _field.AvailableZones("Residential").Where(y =>
-                        _field[y.Item2.Item1, y.Item2.Item2].Residents.Count
+                        _field[y.Item2.Item1, y.Item2.Item2].residents.Count
                         < (Int32)_field[y.Item2.Item1, y.Item2.Item2].SizeOfZone).ToList();
                     
                     Citizen toPlace = new Citizen(Enumerable
                         .Range(1, Int32.MaxValue)
-                        .First(y => !Field.GetCitizens().Select(x => x.CitizenID)
-                            .Concat(_tmpCitizens.Select(c => c.CitizenID)).Contains(y)));
+                        .First(y => !Field.GetCitizens().Select(x => x.CitizenId)
+                            .Concat(_tmpCitizens.Select(c => c.CitizenId)).Contains(y)));
                     
                     if (residentialZones.Count != 0)
                     {
@@ -98,10 +99,10 @@ namespace SimCity.Model
                             happinessBasedFieldCounts.ElementAt(randSelector.Next(happinessBasedFieldCounts.Count));
                         
                         if(_tmpCitizens.Count == 0)
-                            _field[selectedField.Item1, selectedField.Item2].Residents.Add(toPlace);
+                            _field[selectedField.Item1, selectedField.Item2].residents.Add(toPlace);
                         else
                         {
-                            _field[selectedField.Item1, selectedField.Item2].Residents.Add(_tmpCitizens.Dequeue());
+                            _field[selectedField.Item1, selectedField.Item2].residents.Add(_tmpCitizens.Dequeue());
                             _tmpCitizens.Enqueue(toPlace);
                         }
                     }
@@ -109,13 +110,13 @@ namespace SimCity.Model
                         _tmpCitizens.Enqueue(toPlace);
                 }
 
-                Task.Run(() => _money += Field.TickZones(CommercialTax, IndustrialTax).Result);
+                Task.Run(() => _money += Field.TickZones(CommercialTax, IndustrialTax, ResidentialTax).Result);
                 Task.Run(() =>
                 {
                     var inhabitedResidentialZones = _field.AvailableZones("Residential")
                         .Select(y => y.Item1).Where(y => y.IsInhabited);
 
-                    var residentsToMoveOut = inhabitedResidentialZones.SelectMany(y => y.Residents)
+                    var residentsToMoveOut = inhabitedResidentialZones.SelectMany(y => y.residents)
                         .ToList();
                     
                     foreach (Citizen resident in residentsToMoveOut)

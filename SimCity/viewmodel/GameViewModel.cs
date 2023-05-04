@@ -186,7 +186,7 @@ namespace SimCity.ViewModel
             foreach (SimCityField field in Fields)
             {
                 field.ZoneType = _model.Field[field.X, field.Y].GetAreaType();
-                field.NumberOfResidents = _model.Field[field.X, field.Y].Residents.Count;
+                field.NumberOfResidents = _model.Field[field.X, field.Y].residents.Count;
                 if(field.NumberOfResidents > 0)
                 {
                     field.Happiness = _model.Field[field.X, field.Y].Happiness;
@@ -242,7 +242,7 @@ namespace SimCity.ViewModel
                         Text = String.Empty,
                         ZoneType = new AreaType().GetAreaType(),
                         ClickCommand = new DelegateCommand(param => ClickField(Convert.ToInt32(param))),
-                        NumberOfResidents = new AreaType().Residents.Count,
+                        NumberOfResidents = new AreaType().residents.Count,
                         MaintanenceCost = new AreaType().MaintenanceCost,
                         //TaxRate = 
                         Happiness = new AreaType().Happiness,
