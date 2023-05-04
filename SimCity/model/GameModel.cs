@@ -56,10 +56,6 @@ namespace SimCity.Model
                 _money -= _field.GetMaintenance();
                 
                 //Residential area ticks
-<<<<<<< SimCity/model/GameModel.cs
-                if (_citizens < _field.MaxCitizens)
-                    _citizens += 1;
-=======
                 if (_field.NumberOfCitizens < _field.MaxCitizens)
                 {
                     //TODO: Residents more likely to fill happier zones
@@ -76,7 +72,6 @@ namespace SimCity.Model
                         _field[selectedField.Item1, selectedField.Item2].NumberOfResidents += 1;
                     }
                 }
->>>>>>> SimCity/model/GameModel.cs
             }
 
             this.GameAdvanced?.Invoke(this, new SimCityArgsTime(_timeElapsed, _field.NumberOfCitizens, _money));
