@@ -110,7 +110,15 @@ namespace SimCity.Model
                         _tmpCitizens.Enqueue(toPlace);
                 }
 
-                Task.Run(() => _money += Field.TickZones(CommercialTax, IndustrialTax, ResidentialTax).Result);
+                Object MoneyLock = new object();
+                Task.Run(() =>
+                {
+                    Int32 tax = Field.TickZones(CommercialTax, IndustrialTax, ResidentialTax).Result;
+                    lock (MoneyLock)
+                    {
+                        _money += tax;
+                    }
+                });
                 Task.Run(() =>
                 {
                     var inhabitedResidentialZones = _field.AvailableZones("Residential")

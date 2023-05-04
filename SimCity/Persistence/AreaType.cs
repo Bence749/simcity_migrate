@@ -129,7 +129,7 @@ public class CommercialZone : AreaType
         
         //Income
         Int32 income = customerResidents.Sum(y => 
-            (Int32) Math.Round((y.Item1 * 0.3 + 1) * (y.Item2 < _maxCustomers ? y.Item2 : _maxCustomers) * 50));
+            (Int32) Math.Round((y.Item1 * 0.3 + 1) * (y.Item2 < _maxCustomers ? y.Item2 : _maxCustomers) * 200));
 
         Int32 tax = (Int32)Math.Round((income - spending) * (taxPercent / 100.0));
         RoI = (income - (spending + MaintenanceCost)) / (spending + MaintenanceCost);
@@ -139,9 +139,13 @@ public class CommercialZone : AreaType
         else
             Patience = 100;
 
-        if (RoI < 0.3 && Patience % (Double)Math.Round(100.0 / (Int32)SizeOfZone) == 0)
-            Fire(AreaID, 100 / (Int32) SizeOfZone > 1 ? 1 : (Int32) Math.Round(1 / (100.0 / (Int32) SizeOfZone)));
-        
+        if (RoI < 0.3 && Patience < 30 && Patience % (Double)Math.Round(30.0 / (Int32)SizeOfZone) == 0)
+        {
+            Int32 numberOfFired = 30 / (Int32)SizeOfZone > 1 ? 1 : (Int32)Math.Round(1 / (30.0 / (Int32)SizeOfZone));
+            Fire(AreaID, numberOfFired);
+            NumberOfWorkers -= numberOfFired;
+        }
+
         if(Patience == 0)
             if(RoI > 0.8)
                 Upgrade();
@@ -155,12 +159,12 @@ public class CommercialZone : AreaType
 
     public override Citizen? Hire(List<AreaType> neighbourAreas)
     {
-        if (RoI < 0.3) return null;
-        
         Random rnd = new Random();
         var unemployed = neighbourAreas.Where(y => y.GetAreaType() == "Residential")
             .SelectMany(y => y.residents).Where(y => y.WorkplaceId == null && y.CitizenId > 0).OrderBy(y => rnd.Next())
             .ToList().FirstOrDefault();
+
+        NumberOfWorkers++;
 
         return unemployed;
     }
@@ -210,20 +214,20 @@ public class ResidentialZone : AreaType
 
         foreach (var citizen in citizens)
         {
-            if (_costOfLiving / citizen.Income > 0.8)
+            if (_costOfLiving / (citizen.Income + 10e-6) > 0.8)
                 citizen.Happiness--;
-            else if (_costOfLiving / citizen.Income < 0.5)
+            else if (_costOfLiving / (citizen.Income + 10e-6) < 0.5)
                 citizen.Happiness++;
         }
 
-        double citizensHappiness = citizens.Select(y => y.Happiness).Average();
-        if(citizensHappiness < 0.2 || citizensHappiness > 0.8)
+        double citizensHappiness = citizens.Count != 0 ? citizens.Select(y => y.Happiness).Average() : 0;
+        if(citizensHappiness < 20 || citizensHappiness > 80)
             Patience -= 1;
         else
             Patience = 100;
         
         if(Patience == 0)
-            if(citizensHappiness > 0.8)
+            if(citizensHappiness > 80)
                 Upgrade();
             else
                 Unhabit();

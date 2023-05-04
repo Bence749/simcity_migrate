@@ -141,7 +141,7 @@ public class Map
                     Value = value,
                     Index = (index / _fields.GetLength(0), index % _fields.GetLength(1))
                 })
-            .Where(y => y.Value.GetType().GetMethod("CalculateTax") != y.Value.GetType()).ToList();
+            .ToList();
 
         Int32 taxIncomeSum = 0;
         Object taxIncomeSumLock = new Object();
@@ -151,7 +151,7 @@ public class Map
             await Task.Run(() =>
             {
                 Int32 taxIncome;
-                if (zone.Value.GetAreaType() != "Resindential")
+                if (zone.Value.GetAreaType() != "Residential")
                 {
                     taxIncome = zone.Value
                         .CalculateTax(NeighbouringFields(zone.Index.Item1, zone.Index.Item2, zone.Value.AreaSize)
@@ -166,13 +166,13 @@ public class Map
                     taxIncomeSum += taxIncome;
                 }
             });
-            if ((zone.Value.GetType().GetMethod("Hire") != zone.Value.GetType())
-                && zone.Value.NumberOfWorkers < (Int32)zone.Value.SizeOfZone)
+            if ((zone.Value.GetAreaType() == "Commercial" || zone.Value.GetAreaType() == "Industrial")
+                && zone.Value.NumberOfWorkers < (Int32) zone.Value.SizeOfZone)
                 await Task.Run(() =>
                 {
                     Citizen? toHire = _fields[zone.Index.Item1, zone.Index.Item2]
                         .Hire(NeighbouringFields(zone.Index.Item1, zone.Index.Item2, 
-                            ((Int32) zone.Value.AreaSize) * 2).Select(y => y.Item1).ToList());
+                            ((Int32) zone.Value.AreaSize)).Select(y => y.Item1).ToList());
                     
                     if(toHire is not null)
                         lock (citizensLock)
@@ -195,6 +195,7 @@ public class Map
                 });
         }
 
+        
         return taxIncomeSum;
     }
 
