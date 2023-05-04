@@ -110,6 +110,21 @@ namespace SimCity.Model
                 }
 
                 Task.Run(() => _money += Field.TickZones(CommercialTax, IndustrialTax).Result);
+                Task.Run(() =>
+                {
+                    var inhabitedResidentialZones = _field.AvailableZones("Residential")
+                        .Select(y => y.Item1).Where(y => y.IsInhabited);
+
+                    var residentsToMoveOut = inhabitedResidentialZones.SelectMany(y => y.Residents)
+                        .ToList();
+                    
+                    foreach (Citizen resident in residentsToMoveOut)
+                    {
+                        resident.MoveOut();
+                        _tmpCitizens.Enqueue(resident);
+                    }
+
+                });
 
                 this.GameAdvanced?.Invoke(this, new SimCityArgsTime(_timeElapsed, _field.NumberOfCitizens, _money));
             }
