@@ -92,6 +92,7 @@ namespace SimCity.ViewModel
             {
                 if (_currentBuildAction == value) return;
                 _currentBuildAction = value;
+                OnPropertyChanged();
             }
         }
 
@@ -155,8 +156,6 @@ namespace SimCity.ViewModel
             SpeedCommand = new DelegateCommand(param => OnSpeedChange(param));
             NewGameSmallCommand = new DelegateCommand(param => OnNewGameSmall());
 
-            BuildCommand = new DelegateCommand(param => OnBuild(Convert.ToString(param)));
-
             InfoCommand = new DelegateCommand(param => InfoPanel());
 
             CatastopheCommand = new DelegateCommand(param => ForestFire());
@@ -175,7 +174,6 @@ namespace SimCity.ViewModel
             MenuItems.Add(new MenuField { Name = "Fire Dept.", Price = 500, ImageSource = "/SimCity;Component/Images/fireDepartment.jpg", SelectCommand = new DelegateCommand(param => OnBuild(Convert.ToString(param))), CommandParameter = "Build FireDepartment" });
 
 
-
         }
         #endregion
 
@@ -186,7 +184,11 @@ namespace SimCity.ViewModel
             foreach (SimCityField field in Fields)
             {
                 field.ZoneType = _model.Field[field.X, field.Y].GetAreaType();
+<<<<<<< SimCity/viewmodel/GameViewModel.cs
                 field.NumberOfResidents = _model.Field[field.X, field.Y].residents.Count;
+=======
+                field.NumberOfResidents = _model.Field[field.X, field.Y].NumberOfResidents;
+>>>>>>> SimCity/viewmodel/GameViewModel.cs
                 if(field.NumberOfResidents > 0)
                 {
                     field.Happiness = _model.Field[field.X, field.Y].Happiness;
@@ -242,7 +244,11 @@ namespace SimCity.ViewModel
                         Text = String.Empty,
                         ZoneType = new AreaType().GetAreaType(),
                         ClickCommand = new DelegateCommand(param => ClickField(Convert.ToInt32(param))),
+<<<<<<< SimCity/viewmodel/GameViewModel.cs
                         NumberOfResidents = new AreaType().residents.Count,
+=======
+                        NumberOfResidents = new AreaType().NumberOfResidents,
+>>>>>>> SimCity/viewmodel/GameViewModel.cs
                         MaintanenceCost = new AreaType().MaintenanceCost,
                         //TaxRate = 
                         Happiness = new AreaType().Happiness,
@@ -297,8 +303,6 @@ namespace SimCity.ViewModel
                             _model.ClickHandle(field.X, field.Y, "Build", new FireDepartment());
                             break;
                     }
-
-                CurrentBuildAction = "";
                 
                 RefreshTable();
             }
