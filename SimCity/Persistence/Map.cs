@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -19,7 +20,7 @@ public class Map
     public Int32 RowSize => _fields.GetLength(0);
     public Int32 ColumnSize => _fields.GetLength(1);
     
-    public Int32 NumberOfCitizens => _fields.Cast<AreaType>().Select(y => y.NumberOfResidents).Sum();
+    public Int32 NumberOfCitizens => _fields.Cast<AreaType>().Select(y => y.residents.Count).Sum();
 
     public Int32 MaxCitizens => _fields.Cast<AreaType>().Select(y => (Int32) y.SizeOfZone).Sum();
 
@@ -70,13 +71,22 @@ public class Map
             throw new PersistenceExceptions("Selected area is not surrounded by a road.");
 
         toBuild.Happiness = _fields[row, column].Happiness;
-        if (toBuild.IsSpecial)
+        if (toBuild.HappinessInc != 0)
         {
             var neighbourFields = NeighbouringFields(row, column, toBuild.AreaSize);
             foreach (var fields in neighbourFields.Select(y => y.Item2))
                 _fields[fields.Item1, fields.Item2].Happiness += toBuild.HappinessInc;
         }
+
+        toBuild.AreaID = Enumerable.Range(1, Int32.MaxValue)
+            .First(y => !_fields.Cast<AreaType>().Select(y => y.AreaID).Contains(y));
         _fields[row, column] = toBuild;
+        if (_fields[row, column].GetType().GetMethod("Upgrade") != null)
+        {
+            _fields[row, column].UpdateEvent += UpdateCitizens!;
+            _fields[row, column].FireEvent += FireCitizens!;
+        }
+
         return toBuild.BuildCost;
     }
 
@@ -122,6 +132,73 @@ public class Map
         return output;
     }
 
+    public async Task<Int32> TickZones(Int32 commercialTax, Int32 industrialTax, Int32 resindentialTax)
+    {
+        var zonesToTick = _fields.Cast<AreaType>()
+            .Select((value, index) =>
+                new
+                {
+                    Value = value,
+                    Index = (index / _fields.GetLength(0), index % _fields.GetLength(1))
+                })
+            .ToList();
+
+        Int32 taxIncomeSum = 0;
+        Object taxIncomeSumLock = new Object();
+        Object citizensLock = new Object();
+        foreach (var zone in zonesToTick)
+        {
+            await Task.Run(() =>
+            {
+                Int32 taxIncome;
+                if (zone.Value.GetAreaType() != "Residential")
+                {
+                    taxIncome = zone.Value
+                        .CalculateTax(NeighbouringFields(zone.Index.Item1, zone.Index.Item2, zone.Value.AreaSize)
+                                .Select(y => y.Item1).ToList(),
+                            zone.Value.GetAreaType() == "Commercial" ? commercialTax : industrialTax);
+                }
+                else
+                    taxIncome = zone.Value.CalculateTax(ref _fields[zone.Index.Item1, zone.Index.Item2].residents,
+                        resindentialTax);
+                lock (taxIncomeSumLock)
+                {
+                    taxIncomeSum += taxIncome;
+                }
+            });
+            if ((zone.Value.GetAreaType() == "Commercial" || zone.Value.GetAreaType() == "Industrial")
+                && zone.Value.NumberOfWorkers < (Int32) zone.Value.SizeOfZone)
+                await Task.Run(() =>
+                {
+                    Citizen? toHire = _fields[zone.Index.Item1, zone.Index.Item2]
+                        .Hire(NeighbouringFields(zone.Index.Item1, zone.Index.Item2, 
+                            ((Int32) zone.Value.AreaSize)).Select(y => y.Item1).ToList());
+                    
+                    if(toHire is not null)
+                        lock (citizensLock)
+                        {
+                            var citizenToHireLoc = _fields.Cast<AreaType>()
+                                .Select((y, index) => new
+                                {
+                                    Value = y, 
+                                    Index = (index / _fields.GetLength(0), index % _fields.GetLength(1))
+                                }).Where(y => y.Value.GetAreaType() == "Residential")
+                                .First(y => y.Value.residents.Contains(toHire)).Index;
+
+                            Int32 citizenIndex = _fields[citizenToHireLoc.Item1, citizenToHireLoc.Item2].residents
+                                .FindIndex(y => y == toHire);
+                            _fields[citizenToHireLoc.Item1, citizenToHireLoc.Item2].residents[citizenIndex].WorkplaceId =
+                                zone.Value.AreaID;
+                            _fields[citizenToHireLoc.Item1, citizenToHireLoc.Item2].residents[citizenIndex].Income =
+                                zone.Value.Salary;
+                        }
+                });
+        }
+
+        
+        return taxIncomeSum;
+    }
+
     /// <summary>
     /// Returns a list of neighbouring fields within the specified area around the given row and column indices.
     /// </summary>
@@ -133,7 +210,7 @@ public class Map
     /// This method searches for neighbouring fields within a square area of size (2 * area + 1) x (2 * area + 1) centered around the specified row and column indices.
     /// The method returns a list of tuples, where each tuple contains the field value and its row and column indices.
     /// </remarks>
-    private List<(AreaType, (Int32, Int32))> NeighbouringFields(Int32 row, Int32 col, Int32 area = 1)
+    public List<(AreaType, (Int32, Int32))> NeighbouringFields(Int32 row, Int32 col, Int32 area = 1)
     {
         var output = (from i in Enumerable.Range(row - area, 1 + 2 * area)
                                        from j in Enumerable.Range(col - area, 1 + 2 * area)
@@ -145,4 +222,53 @@ public class Map
 
     }
 
+    public List<Citizen> GetCitizens()
+    {
+        List<Citizen> citizens = _fields.Cast<AreaType>()
+            .Where(y => y.GetAreaType() == "Residential")
+            .SelectMany(y => y.residents).ToList();
+
+        return citizens;
+    }
+
+    private void UpdateCitizens(object sender, CitizenUpdateArgs e)
+    {
+        for(Int32 i = 0; i < _fields.GetLength(0); ++i)
+            for (Int32 j = 0; j < _fields.GetLength(1); ++j)
+            {
+                if (_fields[i, j].GetAreaType() == "Residential" &&
+                    _fields[i, j].residents.Select(y => y.WorkplaceId).Contains(e.areaId))
+                {
+                    List<Int32> indices = _fields[i, j].residents
+                        .Select((value, index) => new { Value = value.WorkplaceId, Index = index })
+                        .Where(y => y.Value == e.areaId).Select(y => y.Index).ToList();
+
+                    foreach (Int32 index in indices)
+                        _fields[i, j].residents[index].Income = e.salary;
+                }
+            }
+    }
+
+    private void FireCitizens(object sender, (Int32, Int32) e)
+    {
+        for (Int32 i = 0; i < e.Item2; ++i)
+        {
+            Random rnd = new Random();
+            var toFireResidentIndex = _fields.Cast<AreaType>()
+                .Where(y => y.GetAreaType() == "Residential")
+                .Select((value, index) =>
+                    new
+                    {
+                        Value = value,
+                        Index = (index / _fields.GetLength(0), index % _fields.GetLength(1))
+                    }).Where(y => y.Value.residents.Select(x => x.WorkplaceId).Contains(e.Item1))
+                .OrderBy(y => rnd.Next()).First();
+
+            Int32 residentToFireIndex = _fields[toFireResidentIndex.Index.Item1, toFireResidentIndex.Index.Item2]
+                .residents.FindIndex(y => y.WorkplaceId == e.Item1);
+
+            _fields[toFireResidentIndex.Index.Item1, toFireResidentIndex.Index.Item2].residents[residentToFireIndex]
+                .MoveOut();
+        }
+    }
 }

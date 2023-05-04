@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,16 +17,34 @@ public enum PlaySpeed { Stop, Normal, Fast, Faster }
 
 namespace SimCity.Model
 {
+    public class LimitedQueue<T> : Queue<T>
+    {
+        private readonly int _maxSize;
+
+        public LimitedQueue(int maxSize)
+        {
+            _maxSize = maxSize;
+        }
+
+        public new void Enqueue(T item)
+        {
+            while (this.Count >= _maxSize)
+                this.Dequeue();
+            base.Enqueue(item);
+        }
+    }
     public class GameModel
     {
         private Map _field = null!;
         private Int32 _timeElapsed;
         private Int32 _tickCount;
         private Int32 _money;
-        private Int32 _citizens;
+        private LimitedQueue<Citizen> _tmpCitizens;
 
         public PlaySpeed GamePace { get; set; }
-
+        public Int32 CommercialTax { get; set; }
+        public Int32 IndustrialTax { get; set; }
+        public Int32 ResidentialTax { get; set; }
         public Map Field => _field;
 
         public event EventHandler<SimCityArgsTime>? GameAdvanced;
@@ -36,8 +54,11 @@ namespace SimCity.Model
         {
             _timeElapsed = 0;
             _money = 100000;
-            _citizens = 0;
             GamePace = PlaySpeed.Normal;
+            CommercialTax = 10;
+            IndustrialTax = 10;
+            ResidentialTax = 10;
+            _tmpCitizens = new LimitedQueue<Citizen>(100);
         }
 
         public void CreateGame(Int32 rows, Int32 columns)
@@ -55,26 +76,75 @@ namespace SimCity.Model
                 ++_timeElapsed;
                 _money -= _field.GetMaintenance();
                 
+<<<<<<< SimCity/model/GameModel.cs
                 //Residential area ticks
+=======
+>>>>>>> SimCity/model/GameModel.cs
                 if (_field.NumberOfCitizens < _field.MaxCitizens)
                 {
-                    //TODO: Residents more likely to fill happier zones
-                    List<(Int32, Int32)> residentialZones = _field.AvailableZones("Residential").Where(y => 
-                        _field[y.Item2.Item1, y.Item2.Item2].NumberOfResidents
-                        < (Int32) _field[y.Item2.Item1, y.Item2.Item2].SizeOfZone)
-                        .SelectMany(y => Enumerable.Repeat(y.Item2, y.Item1.Happiness + 1)).ToList();
-
+                    var residentialZones = _field.AvailableZones("Residential").Where(y =>
+                        _field[y.Item2.Item1, y.Item2.Item2].residents.Count
+                        < (Int32)_field[y.Item2.Item1, y.Item2.Item2].SizeOfZone).ToList();
+                    
+                    Citizen toPlace = new Citizen(Enumerable
+                        .Range(1, Int32.MaxValue)
+                        .First(y => !Field.GetCitizens().Select(x => x.CitizenId)
+                            .Concat(_tmpCitizens.Select(c => c.CitizenId)).Contains(y)));
+                    
                     if (residentialZones.Count != 0)
                     {
+                        Int32 minHappiness = residentialZones.Min(y => y.Item1.Happiness) + 1;
+                        List<(Int32, Int32)> happinessBasedFieldCounts = residentialZones
+                            .Select(y => (y.Item1.Happiness + minHappiness, y.Item2))
+                            .SelectMany(y => Enumerable.Repeat(y.Item2, y.Item1)).ToList();
+
                         Random randSelector = new Random();
                         (Int32, Int32) selectedField =
-                            residentialZones.ElementAt(randSelector.Next(residentialZones.Count));
-                        _field[selectedField.Item1, selectedField.Item2].NumberOfResidents += 1;
+                            happinessBasedFieldCounts.ElementAt(randSelector.Next(happinessBasedFieldCounts.Count));
+                        
+                        if(_tmpCitizens.Count == 0)
+                            _field[selectedField.Item1, selectedField.Item2].residents.Add(toPlace);
+                        else
+                        {
+                            _field[selectedField.Item1, selectedField.Item2].residents.Add(_tmpCitizens.Dequeue());
+                            _tmpCitizens.Enqueue(toPlace);
+                        }
                     }
+                    else 
+                        _tmpCitizens.Enqueue(toPlace);
                 }
+<<<<<<< SimCity/model/GameModel.cs
+=======
+
+                Object MoneyLock = new object();
+                Task.Run(() =>
+                {
+                    Int32 tax = Field.TickZones(CommercialTax, IndustrialTax, ResidentialTax).Result;
+                    lock (MoneyLock)
+                    {
+                        _money += tax;
+                    }
+                });
+                Task.Run(() =>
+                {
+                    var inhabitedResidentialZones = _field.AvailableZones("Residential")
+                        .Select(y => y.Item1).Where(y => y.IsInhabited);
+
+                    var residentsToMoveOut = inhabitedResidentialZones.SelectMany(y => y.residents)
+                        .ToList();
+                    
+                    foreach (Citizen resident in residentsToMoveOut)
+                    {
+                        resident.MoveOut();
+                        _tmpCitizens.Enqueue(resident);
+                    }
+
+                });
+
+                this.GameAdvanced?.Invoke(this, new SimCityArgsTime(_timeElapsed, _field.NumberOfCitizens, _money));
+>>>>>>> SimCity/model/GameModel.cs
             }
 
-            this.GameAdvanced?.Invoke(this, new SimCityArgsTime(_timeElapsed, _field.NumberOfCitizens, _money));
         }
         
         /// <summary>
