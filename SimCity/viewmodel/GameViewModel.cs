@@ -132,6 +132,7 @@ namespace SimCity.ViewModel
         public DelegateCommand CatastopheCommand { get; private set; }
 
         public DelegateCommand RaiseTaxCommand { get; private set; }
+        public DelegateCommand UpgradeCommand { get; private set; }
 
         public DelegateCommand LowerTaxCommand { get; private set; }
 
@@ -185,6 +186,7 @@ namespace SimCity.ViewModel
             CatastopheCommand = new DelegateCommand(param => ForestFire());
             RaiseTaxCommand = new DelegateCommand(param => RaiseTax());
             LowerTaxCommand = new DelegateCommand(param => ReduceTax());
+            UpgradeCommand = new DelegateCommand(param => UpgradeBuilding());
 
             ExitCommand = new DelegateCommand(param => OnExitGame());
 
@@ -211,6 +213,7 @@ namespace SimCity.ViewModel
             foreach (SimCityField field in Fields)
             {
                 field.ZoneType = _model.Field[field.X, field.Y].GetAreaType();
+                field.Size = _model.Field[field.X, field.Y].SizeOfZone;
                 field.NumberOfResidents = _model.Field[field.X, field.Y].residents.Count;
                 if(field.NumberOfResidents > 0)
                 {
@@ -220,6 +223,70 @@ namespace SimCity.ViewModel
                         field.Capacity = 25;
                     else if(_model.Field[field.X, field.Y].SizeOfZone == SizeType.Big)
                         field.Capacity = 50;
+                }
+
+                switch (field.ZoneType)
+                {
+                    case ("None"):
+                        field.ImageSource = "/SimCity;Component/Images/background.jpg";
+                        break;
+                    case ("Residential"):
+                        if (field.Size == SizeType.Small)
+                            field.ImageSource = "/SimCity;Component/Images/residential.jpg";
+                        else if (field.Size == SizeType.Medium)
+                            field.ImageSource = "/SimCity;Component/Images/metropolis1.jpg";
+                        else if (field.Size == SizeType.Big)
+                            field.ImageSource = "/SimCity;Component/Images/metropolis2.jpg";
+                        break;
+                    case ("Commercial"):
+                        field.ImageSource = "/SimCity;Component/Images/commercial.jpg";
+                        break;
+                    case ("Industrial"):
+                        field.ImageSource = "/SimCity;Component/Images/industrial.jpg";
+                        break;
+                    case ("Road"):
+                        field.ImageSource = "/SimCity;Component/Images/road.png";
+                        break;
+                    case ("Police"):
+                        field.ImageSource = "/SimCity;Component/Images/police.jpg";
+                        break;
+                    case ("Stadium"):
+                        field.ImageSource = "/SimCity;Component/Images/stadium.jpg";
+                        break;
+                    case ("Tree"):
+                        var TimeElapsedSinceCreatedYears = (TimeElapsed - field.CreatedAt) / 12;
+                        if (TimeElapsedSinceCreatedYears >= 0 && TimeElapsedSinceCreatedYears < 1)
+                            field.ImageSource = "/SimCity;Component/Images/tree1.jpg";
+                        else if (TimeElapsedSinceCreatedYears >= 1 && TimeElapsedSinceCreatedYears < 2)
+                            field.ImageSource = "/SimCity;Component/Images/tree2.jpg";
+                        else if (TimeElapsedSinceCreatedYears >= 2 && TimeElapsedSinceCreatedYears < 3)
+                            field.ImageSource = "/SimCity;Component/Images/tree3.jpg";
+                        else if (TimeElapsedSinceCreatedYears >= 3 && TimeElapsedSinceCreatedYears < 4)
+                            field.ImageSource = "/SimCity;Component/Images/tree3.jpg";
+                        else if (TimeElapsedSinceCreatedYears >= 4 && TimeElapsedSinceCreatedYears < 5)
+                            field.ImageSource = "/SimCity;Component/Images/tree4.jpg";
+                        else if (TimeElapsedSinceCreatedYears >= 5 && TimeElapsedSinceCreatedYears < 6)
+                            field.ImageSource = "/SimCity;Component/Images/tree5.jpg";
+                        else if (TimeElapsedSinceCreatedYears >= 6 && TimeElapsedSinceCreatedYears < 7)
+                            field.ImageSource = "/SimCity;Component/Images/tree6.jpg";
+                        else if (TimeElapsedSinceCreatedYears >= 7 && TimeElapsedSinceCreatedYears < 8)
+                            field.ImageSource = "/SimCity;Component/Images/tree7.jpg";
+                        else if (TimeElapsedSinceCreatedYears >= 8 && TimeElapsedSinceCreatedYears < 9)
+                            field.ImageSource = "/SimCity;Component/Images/tree8.jpg";
+                        else if (TimeElapsedSinceCreatedYears >= 9 && TimeElapsedSinceCreatedYears < 10)
+                            field.ImageSource = "/SimCity;Component/Images/tree9.jpg";
+                        else if (TimeElapsedSinceCreatedYears >= 10)
+                            field.ImageSource = "/SimCity;Component/Images/tree10.jpg";
+                        break;
+                    case ("FireDepartment"):
+                        field.ImageSource = "/SimCity;Component/Images/fireDepartment.jpg";
+                        break;
+                    default:
+                        break;
+                }
+                if (_model.Field[field.X, field.Y].SizeOfZone == SizeType.Medium)
+                {
+
                 }
             }
             
@@ -243,6 +310,16 @@ namespace SimCity.ViewModel
                 return;
             }
             else return;
+        }
+
+        private void UpgradeBuilding()
+        {
+            if (SelectedField.Size == SizeType.Small)
+                _model.Field[SelectedField.X, SelectedField.Y].SizeOfZone = SizeType.Medium;
+            else if (SelectedField.Size == SizeType.Medium)
+                _model.Field[SelectedField.X, SelectedField.Y].SizeOfZone = SizeType.Big;
+            RefreshTable();
+            return;
         }
 
         //az infopanel mindig megállítja a játékot, majd 1-es sebességen (Normal) indítja újra, ha bezárul a felugró ablak
@@ -294,7 +371,6 @@ namespace SimCity.ViewModel
                         Happiness = new AreaType().Happiness,
                         Capacity = 15, //starts at 15, aka SMALL
                         RemovePrice = new AreaType().RemovePrice,
-                        
                     }) ;
                 }
             }
@@ -314,7 +390,10 @@ namespace SimCity.ViewModel
                 var paramsToClick = CurrentBuildAction.Split(' ');
 
                 if (paramsToClick[0] == "Remove")
+                {
                     _model.ClickHandle(field.X, field.Y, paramsToClick[0]);
+                    field.CreatedAt = 0;
+                }
                 else if (Fields[index].ZoneType == "Residential" || Fields[index].ZoneType == "Commercial" || Fields[index].ZoneType == "Industrial")
                 {
                     
@@ -336,27 +415,43 @@ namespace SimCity.ViewModel
                     {
                         case "Road":
                             _model.ClickHandle(field.X, field.Y, "Build", new Road());
+                            if (field.ZoneType == "None")
+                                field.CreatedAt = TimeElapsed;
                             break;
                         case "Living":
                             _model.ClickHandle(field.X, field.Y, "Build", new ResidentialZone());
+                            if (field.ZoneType == "None")
+                                field.CreatedAt = TimeElapsed;
                             break;
                         case "Commercial":
                             _model.ClickHandle(field.X, field.Y, "Build", new CommercialZone());
+                            if (field.ZoneType == "None")
+                                field.CreatedAt = TimeElapsed;
                             break;
                         case "Industrial":
                             _model.ClickHandle(field.X, field.Y, "Build", new IndustrialZone());
+                            if (field.ZoneType == "None")
+                                field.CreatedAt = TimeElapsed;
                             break;
                         case "Police":
                             _model.ClickHandle(field.X, field.Y, "Build", new Police());
+                            if (field.ZoneType == "None")
+                                field.CreatedAt = TimeElapsed;
                             break;
                         case "Stadium":
                             _model.ClickHandle(field.X, field.Y, "Build", new Stadium());
+                            if (field.ZoneType == "None")
+                                field.CreatedAt = TimeElapsed;
                             break;
                         case "Tree":
                             _model.ClickHandle(field.X, field.Y, "Build", new Tree());
+                            if (field.ZoneType == "None")
+                                field.CreatedAt = TimeElapsed;
                             break;
                         case "FireDepartment":
                             _model.ClickHandle(field.X, field.Y, "Build", new FireDepartment());
+                            if (field.ZoneType == "None")
+                                field.CreatedAt = TimeElapsed;
                             break;
                     }
                 
