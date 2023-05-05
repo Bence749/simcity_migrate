@@ -1,0 +1,23 @@
+﻿<Window x:Class="SimCity.View.WelcomeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SimCity.View"
+        mc:Ignorable="d"
+        Title="WelcomeWindow" Height="200" Width="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" TextAlignment="Center"> SIM CITY by Electronic Arts</TextBlock>
+        <Button Grid.Row="1" Content="Játék Indítása" Command="{Binding NewGameSmallCommand}"/>
+        <Button Grid.Row="2" Content="Betöltés" />
+        <Button Grid.Row="3" Content="Kilépés" Command="{Binding ExitCommand}"/>
+    </Grid>
+        
+    
+</Window>

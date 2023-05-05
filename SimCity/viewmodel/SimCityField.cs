@@ -11,10 +11,55 @@ namespace SimCity.ViewModel
     {
         private String _zoneType;
         private string _text = String.Empty;
+        private int _numberOfResidents;
+        private int _maintanenceCost;
+        private int _removePrice;
+        private int _capacity; //based on model.SizeType
+        private int _happiness;
+        private string _imageSource = String.Empty;
+        private SizeType _size;
+        private int _createdAt;
+        
+        //TODO
+        private int _taxRate;
 
-        /// <summary>
-        /// 0 ha lakózóna, 1 ha ipari, 2 ha kereskedelmi
-        /// </summary>
+        public string ImageSource
+        {
+            get { return _imageSource; }
+            set
+            {
+                if (_imageSource != value)
+                {
+                    _imageSource = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public SizeType Size
+        {
+            get { return _size; }
+            set
+            {
+                if (_size != value)
+                {
+                    _size = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public int CreatedAt
+        {
+            get { return _createdAt; }
+            set
+            {
+                if (value != _createdAt)
+                { 
+                    _createdAt = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public String ZoneType
         {
             get { return _zoneType; }
@@ -35,6 +80,78 @@ namespace SimCity.ViewModel
                 if (_text != value)
                 {
                     _text = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public Int32 TaxRate
+        {
+            get { return _taxRate; }
+            set
+            {
+                if (_taxRate != value)
+                {
+                    _taxRate = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public Int32 Happiness
+        {
+            get { return _happiness; }
+            set
+            {
+                if (_happiness != value)
+                {
+                    _happiness = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public Int32 Capacity
+        {
+            get { return _capacity; }
+            set
+            {
+                if (_capacity != value)
+                {
+                    _capacity = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public Int32 RemovePrice
+        {
+            get { return _removePrice; }
+            set
+            {
+                if (_removePrice != value)
+                {
+                    _removePrice = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public Int32 MaintanenceCost
+        {
+            get { return _maintanenceCost; }
+            set
+            {
+                if (_maintanenceCost != value)
+                {
+                    _maintanenceCost = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public Int32 NumberOfResidents
+        {
+            get { return _numberOfResidents; }
+            set
+            {
+                if (_numberOfResidents != value)
+                {
+                    _numberOfResidents = value;
                     OnPropertyChanged();
                 }
             }

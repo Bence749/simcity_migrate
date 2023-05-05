@@ -10,6 +10,7 @@ using Microsoft.Win32;
 using SimCity.View;
 using SimCity.ViewModel;
 using SimCity.Model;
+using SimCity.viewmodel;
 
 namespace SimCity
 {
@@ -22,6 +23,8 @@ namespace SimCity
 
         private GameModel _model = null!;
         private GameViewModel _viewModel = null!;
+        private WelcomeWindowViewModel _wwviewModel = null!;
+        private WelcomeWindow? _welcomeView = null!;
         private MainWindow? _view;
         private DispatcherTimer _timer = null!;
 
@@ -31,18 +34,29 @@ namespace SimCity
 
         public App()
         {
-            Startup += new StartupEventHandler(App_Startup);
+            Startup += new StartupEventHandler(Welcome);
         }
 
         #endregion
 
         #region Application event handlers
 
-        private void App_Startup(object? sender, StartupEventArgs e)
+        private void Welcome(object sender, StartupEventArgs e) 
         {
+            _wwviewModel = new WelcomeWindowViewModel();
+            _wwviewModel.ExitGame += new EventHandler(WViewModel_ExitGame);
+            _wwviewModel.NewGameSmall += new EventHandler(ViewModel_StartGame);
+            _welcomeView = new WelcomeWindow();
+            _welcomeView.DataContext = _wwviewModel;
+
+            _welcomeView.Show();
+        }
+
+        private void App_Startup(object? sender, EventArgs e)
+        {
+            
             // modell létrehozás
             _model = new GameModel();
-            _model.CreateGame(10, 10);
 
             // nézemodell létrehozása
             _viewModel = new GameViewModel(_model);
@@ -50,29 +64,33 @@ namespace SimCity
 
             // nézet létrehozása
             _view = new MainWindow();
-            _view.DataContext = _viewModel;
-            _view.Closing += new System.ComponentModel.CancelEventHandler(View_Closing); // eseménykezelés a bezáráshoz
-            _view.Show();
-
-            /* Not necessary
+            
             // Get the size of the defined grid and create the model accordingly
             var itemPanel = (ItemsPanelTemplate?)_view.FindName("GameField");
             if (itemPanel is not null)
             {
                 var gridContent = (UniformGrid)itemPanel.LoadContent();
-                _model.CreateGame(gridContent.Rows, gridContent.Columns);
+                _viewModel.View_CreateGame(gridContent.Rows, gridContent.Columns);
             }
-            */
+            
+            _view.DataContext = _viewModel;
+            _view.Closing += new System.ComponentModel.CancelEventHandler(View_Closing); // eseménykezelés a bezáráshoz
+            _view.Show();
+
+
+            
+            
 
             // időzítő létrehozása
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromMilliseconds(250);
             _timer.Tick += new EventHandler(Timer_Tick);
             _timer.Start();
+            _welcomeView.Close();
         }
 
         #endregion
-
+        
         private void View_Closing(object? sender, CancelEventArgs e)
         {
             Boolean restartTimer = _timer.IsEnabled;
@@ -95,6 +113,16 @@ namespace SimCity
         private void ViewModel_ExitGame(object? sender, System.EventArgs e)
         {
             _view.Close(); // ablak bezárása
+        }
+
+        private void WViewModel_ExitGame(object? sender, System.EventArgs e)
+        {
+            _welcomeView.Close();
+        }
+
+        private void ViewModel_StartGame(object? sender, System.EventArgs e)
+        {
+            App_Startup(sender, e);
         }
         #endregion
 

@@ -5,10 +5,11 @@ namespace SimCity.Model
 {
     public class SimCityArgsClick
     {
-        public readonly Int32 Money;
+        public readonly Int32? Money;
 
-        public SimCityArgsClick(Int32 money)
+        public SimCityArgsClick(Int32? money)
         {
+            this.Money = money;
         }
     }
 }

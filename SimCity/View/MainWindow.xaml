@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:SimCity"
+        xmlns:local="clr-namespace:SimCity" xmlns:localviewmodel="clr-namespace:SimCity.ViewModel"
         mc:Ignorable="d"
         Title="MainWindow" Height="650" Width="1000">
     <Grid>
@@ -13,7 +13,194 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <StatusBar Grid.Row="0">
+        <Menu Grid.Row="0">
+            <MenuItem Header="Fájl">
+                <MenuItem Header="Új játék" Command="{Binding NewGameCommand}" />
+                <Separator />
+                <MenuItem Header="Játék betöltése..." Command="{Binding LoadGameCommand}" />
+                <MenuItem Header="Játék mentése..." Command="{Binding SaveGameCommand}" />
+                <Separator />
+                <MenuItem Header="Kilépés" Command="{Binding ExitCommand}" />
+            </MenuItem>
+            <MenuItem Header="Szünet" Command="{Binding SpeedCommand}" CommandParameter="0"/>
+            <MenuItem Header="Normál" Command="{Binding SpeedCommand}" CommandParameter="1"/>
+            <MenuItem Header="Gyors" Command="{Binding SpeedCommand}" CommandParameter="2"/>
+            <MenuItem Header="Gyorsabb" Command="{Binding SpeedCommand}" CommandParameter="3"/>
+            <MenuItem Header="Erdőtűz" Command="{Binding CatastopheCommand}"/>
+            <MenuItem Header="Info" Command="{Binding InfoCommand}"/>
+        </Menu>
+        <DockPanel Grid.Row="1">
+            <ItemsControl ItemsSource="{Binding MenuItems}">
+
+                <ItemsControl.Resources>
+                    <Style TargetType="{x:Type Button}">
+                        <Setter Property="BorderBrush" Value="White"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Border Background="LightBlue">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <DataTrigger Value="True">
+                                <DataTrigger.Binding>
+                                    <MultiBinding>
+                                        <MultiBinding.Converter>
+                                            <localviewmodel:EqualityConverter />
+                                        </MultiBinding.Converter>
+                                        <Binding Path="DataContext.CurrentBuildAction" RelativeSource="{RelativeSource AncestorType=ItemsControl}" />
+                                        <Binding Path="CommandParameter" />
+                                    </MultiBinding>
+                                </DataTrigger.Binding>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Border Background="Gold">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            <DataTrigger Value="False">
+                                <DataTrigger.Binding>
+                                    <MultiBinding>
+                                        <MultiBinding.Converter>
+                                            <localviewmodel:EqualityConverter />
+                                        </MultiBinding.Converter>
+                                        <Binding Path="DataContext.CurrentBuildAction" RelativeSource="{RelativeSource AncestorType=ItemsControl}" />
+                                        <Binding Path="CommandParameter" />
+                                    </MultiBinding>
+                                </DataTrigger.Binding>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Border Background="LightBlue">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            
+                        </Style.Triggers>
+                    </Style>
+                </ItemsControl.Resources>
+
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical" Width="100" Background="DarkBlue"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button BorderBrush="White" Command="{Binding SelectCommand}" CommandParameter="{Binding CommandParameter}"  HorizontalAlignment="Center">
+                            <StackPanel>
+                                <Label DockPanel.Dock="Left" Foreground="Black" FontSize="15" Content="{Binding Name}"/>
+                                <Image Source="{Binding ImageSource}"/>
+                                <Label HorizontalAlignment="Center" DockPanel.Dock="Right" FontSize="16" Foreground="Green" Content="{Binding Price}"/>
+                                <Separator></Separator>
+                            </StackPanel>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+                <ItemsControl.Template>
+                    <ControlTemplate>
+                        <ScrollViewer Padding="0">
+                            <ItemsPresenter />
+                        </ScrollViewer>
+                    </ControlTemplate>
+                </ItemsControl.Template>
+
+            </ItemsControl>
+
+            <ItemsControl DockPanel.Dock="Left">
+                <TextBlock>INFOPANEL</TextBlock>
+                <Label>Zóna típusa: </Label>
+                <Label Content="{Binding SelectedField.ZoneType}"/>
+                <Label>Kihasználtság: </Label>
+                <Label Content="{Binding SelectedField.NumberOfResidents}"/>
+                <Label>Kapacitás: </Label>
+                <Label Content="{Binding SelectedField.Capacity}"></Label>
+                <Label>Elégedettség: </Label>
+                <Label Content="{Binding SelectedField.Happiness}"/>
+                <Label>Adó: </Label>
+                <Label Content="{Binding SelectedField.TaxRate}"/>
+                <Button Command="{Binding RaiseTaxCommand}"> Adó +</Button>
+                <Button Command="{Binding LowerTaxCommand}"> Adó -</Button>
+                <Button Command="{Binding UpgradeCommand}"> Fejlesztés</Button>
+            </ItemsControl>
+            <ScrollViewer Grid.Row="1" Grid.Column="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
+                <ItemsControl ItemsSource="{Binding Fields}">
+                    <!--az mezőket tároló vezérlő-->
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate x:Name="GameField">
+                            <!--a gombokat egy rácsba fűzzük fel-->
+                            <UniformGrid Rows="50" Columns="50" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <!--az elemek gombok lesznek-->
+                        <DataTemplate>
+                            <Button BorderThickness="0" Width="60" Height="60" Command="{Binding ClickCommand}" CommandParameter="{Binding Number}" Content="{Binding Text}" Focusable="False" RenderTransformOrigin="0.1, 0.1" FontSize="10" FontWeight="Bold">
+                                <Button.RenderTransform>
+                                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                                </Button.RenderTransform>
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" >
+                                            <Setter.Value>
+                                                <ImageBrush ImageSource="{Binding ImageSource}" />
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </Button.Style>
+                                <Button.Triggers>
+                                    <!-- animációk végrehajtása esemény hatására -->
+                                    <EventTrigger RoutedEvent="Button.Loaded">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Duration="0:00:02" From="0" To="1" Storyboard.TargetProperty="Opacity" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                    <EventTrigger RoutedEvent="Button.Click">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimationUsingKeyFrames Duration="0:00:00.2" Storyboard.TargetProperty="(Foreground).(SolidColorBrush.Color)">
+                                                    <ColorAnimationUsingKeyFrames.KeyFrames>
+                                                        <DiscreteColorKeyFrame Value="Blue" KeyTime="0:00:00" />
+                                                        <DiscreteColorKeyFrame Value="Black" KeyTime="0:00:00.2" />
+                                                    </ColorAnimationUsingKeyFrames.KeyFrames>
+                                                </ColorAnimationUsingKeyFrames>
+                                                <DoubleAnimation Duration="0:00:00.1" From="1" To="0.5" AutoReverse="True" Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleX)" />
+                                                <DoubleAnimation Duration="0:00:00.1" From="1" To="0.5" AutoReverse="True" Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleY)" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Button.Triggers>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemContainerStyle>
+                        <!--a függőségi tulajdonságokat kjülön kell kötnünk-->
+                        <Style>
+                            <Setter Property="Grid.Column" Value="{Binding Y}" />
+                            <Setter Property="Grid.Row" Value="{Binding X}" />
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                </ItemsControl>
+            </ScrollViewer>
+
+        
+        </DockPanel>
+        
+        <StatusBar Grid.Row="2">
             <StatusBarItem>
                 <TextBlock Text="Pénz: "/>
             </StatusBarItem>
@@ -39,7 +226,16 @@
                 <TextBlock Text="Idő: "/>
             </StatusBarItem>
             <StatusBarItem>
-                <TextBlock Text="{Binding TimeElapsed}"/>
+                <TextBlock Text="{Binding Years}"/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="év, "/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding Months}"/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="hónap"/>
             </StatusBarItem>
             <Separator/>
             <StatusBarItem>
@@ -49,118 +245,5 @@
                 <TextBlock Text="{Binding SpeedOfGame}"/>
             </StatusBarItem>
         </StatusBar>
-        <ItemsControl Grid.Row="1" ItemsSource="{Binding Fields}">
-            <!--az mezőket tároló vezérlő-->
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate x:Name="GameField">
-                    <!--a gombokat egy rácsba fűzzük fel-->
-                    <UniformGrid Rows="{Binding Rows}" Columns="{Binding Columns}" />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <!--az elemek gombok lesznek-->
-                <DataTemplate>
-                    <Button Command="{Binding ClickCommand}" CommandParameter="{Binding Number}" Content="{Binding Text}" Focusable="False" RenderTransformOrigin="0.1, 0.1" FontSize="10" FontWeight="Bold">
-                        <!-- gomb háttérszíne -->
-                        <!-- gomb méretezése (csak az animációnál használjuk ki) -->
-                        <Button.RenderTransform>
-                            <ScaleTransform ScaleX="1" ScaleY="1" />
-                        </Button.RenderTransform>
-                        <Button.Style>
-                            <!-- gomb stílusa, ahol a színét megadjuk -->
-                            <Style TargetType="Button">
-                                <Style.Triggers>
-                                    <!-- a szín egy adatkötés hatására fog változni -->
-                                    <DataTrigger Binding="{Binding ZoneType}" Value="None">
-                                        <Setter Property="Background" Value="White" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding ZoneType}" Value="Residential">
-                                        <Setter Property="Background" Value="Green" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding ZoneType}" Value="Commercial">
-                                        <Setter Property="Background" Value="Yellow" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding ZoneType}" Value="Industrial">
-                                        <Setter Property="Background" Value="Red" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding ZoneType}" Value="Road">
-                                        <Setter Property="Background" Value="Black" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding ZoneType}" Value="Police">
-                                        <Setter Property="Background" Value="Blue" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding ZoneType}" Value="Stadium">
-                                        <Setter Property="Background" Value="Orange" />
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding ZoneType}" Value="Tree">
-                                        <Setter Property="Background" Value="DarkGreen" />
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                        <Button.Triggers>
-                            <!-- animációk végrehajtása esemény hatására -->
-                            <EventTrigger RoutedEvent="Button.Loaded">
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation Duration="0:00:02" From="0" To="1" Storyboard.TargetProperty="Opacity" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
-                            <EventTrigger RoutedEvent="Button.Click">
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <ColorAnimationUsingKeyFrames Duration="0:00:00.2" Storyboard.TargetProperty="(Foreground).(SolidColorBrush.Color)">
-                                            <ColorAnimationUsingKeyFrames.KeyFrames>
-                                                <DiscreteColorKeyFrame Value="Blue" KeyTime="0:00:00" />
-                                                <DiscreteColorKeyFrame Value="Black" KeyTime="0:00:00.2" />
-                                            </ColorAnimationUsingKeyFrames.KeyFrames>
-                                        </ColorAnimationUsingKeyFrames>
-                                        <DoubleAnimation Duration="0:00:00.1" From="1" To="0.5" AutoReverse="True" Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleX)" />
-                                        <DoubleAnimation Duration="0:00:00.1" From="1" To="0.5" AutoReverse="True" Storyboard.TargetProperty="(RenderTransform).(ScaleTransform.ScaleY)" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger>
-                        </Button.Triggers>
-                    </Button>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-            <ItemsControl.ItemContainerStyle>
-                <!--a függőségi tulajdonságokat kjülön kell kötnünk-->
-                <Style>
-                    <Setter Property="Grid.Column" Value="{Binding Y}" />
-                    <Setter Property="Grid.Row" Value="{Binding X}" />
-                </Style>
-            </ItemsControl.ItemContainerStyle>
-        </ItemsControl>
-        <Menu Grid.Row="2">
-            <MenuItem Header="Fájl">
-                <MenuItem Header="Új játék" Command="{Binding NewGameCommand}" />
-                <Separator />
-                <MenuItem Header="Játék betöltése..." Command="{Binding LoadGameCommand}" />
-                <MenuItem Header="Játék mentése..." Command="{Binding SaveGameCommand}" />
-                <Separator />
-                <MenuItem Header="Kilépés" Command="{Binding ExitCommand}" />
-            </MenuItem>
-            <MenuItem Header="Szünet" Command="{Binding SpeedCommand}" CommandParameter="0"/>
-            <MenuItem Header="Normál" Command="{Binding SpeedCommand}" CommandParameter="1"/>
-            <MenuItem Header="Gyors" Command="{Binding SpeedCommand}" CommandParameter="2"/>
-            <MenuItem Header="Gyorsabb" Command="{Binding SpeedCommand}" CommandParameter="3"/>
-            <MenuItem Header="Építés">
-                <MenuItem Header="Zóna">
-                    <MenuItem Header="Lakó" Command="{Binding BuildCommand}" CommandParameter="Build Living"/>
-                    <MenuItem Header="Ipari" Command="{Binding BuildCommand}" CommandParameter="Build Industrial"/>
-                    <MenuItem Header="Kereskedelmi" Command="{Binding BuildCommand}" CommandParameter="Build Commercial"/>
-                </MenuItem>
-                <MenuItem Header="Szolgáltató">
-                    <MenuItem Header="Rendőrség" Command="{Binding BuildCommand}" CommandParameter="Build Police"/>
-                    <MenuItem Header="Stadion" Command="{Binding BuildCommand}" CommandParameter="Build Stadium"/>
-                    <MenuItem Header="Fa" Command="{Binding BuildCommand}" CommandParameter="Build Tree"/>
-                </MenuItem>
-                <MenuItem Header="Út" Command="{Binding BuildCommand}" CommandParameter="Build Road"/>
-            </MenuItem>
-            <MenuItem Header="Bontás" Command="{Binding BuildCommand}" CommandParameter="Remove"/>
-            <MenuItem Header="Info" Command="{Binding InfoCommand}"/>
-        </Menu>
     </Grid>
 </Window>
