@@ -89,9 +89,9 @@ namespace SimCity.Model
                     
                     if (residentialZones.Count != 0)
                     {
-                        Int32 minHappiness = residentialZones.Min(y => y.Item1.Happiness) + 1;
+                        Int32 minHappiness = residentialZones.Min(y => y.Item1.Happiness) - 1;
                         List<(Int32, Int32)> happinessBasedFieldCounts = residentialZones
-                            .Select(y => (y.Item1.Happiness + minHappiness, y.Item2))
+                            .Select(y => (y.Item1.Happiness - minHappiness, y.Item2))
                             .SelectMany(y => Enumerable.Repeat(y.Item2, y.Item1)).ToList();
 
                         Random randSelector = new Random();
