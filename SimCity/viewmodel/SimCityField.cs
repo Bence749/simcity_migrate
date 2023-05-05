@@ -16,10 +16,49 @@ namespace SimCity.ViewModel
         private int _removePrice;
         private int _capacity; //based on model.SizeType
         private int _happiness;
+        private string _imageSource = String.Empty;
+        private SizeType _size;
+        private int _createdAt;
         
         //TODO
         private int _taxRate;
 
+        public string ImageSource
+        {
+            get { return _imageSource; }
+            set
+            {
+                if (_imageSource != value)
+                {
+                    _imageSource = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public SizeType Size
+        {
+            get { return _size; }
+            set
+            {
+                if (_size != value)
+                {
+                    _size = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public int CreatedAt
+        {
+            get { return _createdAt; }
+            set
+            {
+                if (value != _createdAt)
+                { 
+                    _createdAt = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public String ZoneType
         {

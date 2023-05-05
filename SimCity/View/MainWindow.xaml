@@ -133,9 +133,8 @@
                 <Label Content="{Binding SelectedField.TaxRate}"/>
                 <Button Command="{Binding RaiseTaxCommand}"> Adó +</Button>
                 <Button Command="{Binding LowerTaxCommand}"> Adó -</Button>
-                <Button> Fejlesztés</Button>
+                <Button Command="{Binding UpgradeCommand}"> Fejlesztés</Button>
             </ItemsControl>
-
             <ScrollViewer Grid.Row="1" Grid.Column="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
                 <ItemsControl ItemsSource="{Binding Fields}">
                     <!--az mezőket tároló vezérlő-->
@@ -154,71 +153,11 @@
                                 </Button.RenderTransform>
                                 <Button.Style>
                                     <Style TargetType="Button">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ZoneType}" Value="None">
-                                                <Setter Property="Background" >
-                                                    <Setter.Value>
-                                                        <ImageBrush ImageSource="/SimCity;Component/Images/background.jpg" />
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding ZoneType}" Value="Residential">
-                                                <Setter Property="Background" >
-                                                    <Setter.Value>
-                                                        <ImageBrush ImageSource="/SimCity;Component/Images/residential.jpg" />
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding ZoneType}" Value="Commercial">
-                                                <Setter Property="Background" >
-                                                    <Setter.Value>
-                                                        <ImageBrush ImageSource="/SimCity;Component/Images/commercial.jpg" />
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding ZoneType}" Value="Industrial">
-                                                <Setter Property="Background" >
-                                                    <Setter.Value>
-                                                        <ImageBrush ImageSource="/SimCity;Component/Images/industrial.jpg" />
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding ZoneType}" Value="Road">
-                                                <Setter Property="Background" >
-                                                    <Setter.Value>
-                                                        <ImageBrush ImageSource="/SimCity;Component/Images/road.png" />
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding ZoneType}" Value="Police">
-                                                <Setter Property="Background" >
-                                                    <Setter.Value>
-                                                        <ImageBrush ImageSource="/SimCity;Component/Images/police.jpg" />
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding ZoneType}" Value="Stadium">
-                                                <Setter Property="Background" >
-                                                    <Setter.Value>
-                                                        <ImageBrush ImageSource="/SimCity;Component/Images/stadium.jpg" />
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding ZoneType}" Value="Tree">
-                                                <Setter Property="Background" >
-                                                    <Setter.Value>
-                                                        <ImageBrush ImageSource="/SimCity;Component/Images/tree1.jpg" />
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding ZoneType}" Value="FireDepartment">
-                                                <Setter Property="Background" >
-                                                    <Setter.Value>
-                                                        <ImageBrush ImageSource="/SimCity;Component/Images/fireDepartment.jpg" />
-                                                    </Setter.Value>
-                                                </Setter>
-                                            </DataTrigger>
-                                        </Style.Triggers>
+                                        <Setter Property="Background" >
+                                            <Setter.Value>
+                                                <ImageBrush ImageSource="{Binding ImageSource}" />
+                                            </Setter.Value>
+                                        </Setter>
                                     </Style>
                                 </Button.Style>
                                 <Button.Triggers>
