@@ -23,6 +23,7 @@ namespace SimCity.ViewModel
         private Int32 _moneySum = 0;
         private Int32 _populationSum = 0;
         private String _currentBuildAction = String.Empty;
+        private Int32 _happySum = 0;
         public string? cityName; //add button and shit
         public SimCityField _selectedField;
 
@@ -30,6 +31,18 @@ namespace SimCity.ViewModel
         #endregion
 
         #region Properties
+        public Int32 HappySum
+        {
+            get => _happySum;
+            set
+            {
+                if (_happySum != value)
+                {
+                    _happySum = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public Int32 Months
         {
@@ -382,6 +395,14 @@ namespace SimCity.ViewModel
             Years = Months / 12;
             Months = Months % 12;
         }
+        private void CountHappySum()
+        {
+            HappySum = 0;
+            foreach (SimCityField field in Fields)
+            {
+                HappySum += field.Happiness;
+            }
+        }
         private void ClickField(Int32 index)
         {
             if (CurrentBuildAction != "")
@@ -492,6 +513,7 @@ namespace SimCity.ViewModel
             TimeElapsed = e.TimeElapsed;
             PopulationSum = e.Citizens;
             MoneySum = e.Money;
+            CountHappySum();
             ConvertTime();
             RefreshTable();
         }
